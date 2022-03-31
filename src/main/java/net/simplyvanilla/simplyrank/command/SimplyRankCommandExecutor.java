@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,13 +30,13 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player) || !player.isOp()) {
+        if (!(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage("No permission");
             return true;
         }
 
         if (args.length == 0) {
-            player.sendMessage("Please use /" + label + " <create|set|add|get>");
+            sender.sendMessage("Please use /" + label + " <create|set|add|get>");
             return true;
         }
 
@@ -44,7 +45,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         switch (subCommand) {
             case "create" -> {
                 if (args.length < 3) {
-                    player.sendMessage("Please use /" + label + " create <RANK_NAME> <COLOR> [PREFIX]");
+                    sender.sendMessage("Please use /" + label + " create <RANK_NAME> <COLOR> [PREFIX]");
                     return true;
                 }
 
@@ -53,7 +54,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     ChatColor color = ChatColor.valueOf(args[2].toUpperCase(Locale.ROOT));
 
                     if (dataManager.groupExists(name)) {
-                        player.sendMessage("That group does already exist.");
+                        sender.sendMessage("That group does already exist.");
                         return true;
                     }
 
@@ -66,16 +67,16 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     dataManager.saveGroupData(name, groupData, new IOCallback<>() {
                         @Override
                         public void success(Void data) {
-                            player.sendMessage("Successfully created the group!");
+                            sender.sendMessage("Successfully created the group!");
                         }
 
                         @Override
                         public void error(IOException error) {
-                            player.sendMessage("An error occurred!");
+                            sender.sendMessage("An error occurred!");
                         }
                     });
                 } catch (IllegalArgumentException e) {
-                    player.sendMessage("That color does not exist!");
+                    sender.sendMessage("That color does not exist!");
                     return true;
                 }
             }
@@ -84,7 +85,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 String name = args[1];
 
                 if (args.length != 3) {
-                    player.sendMessage("Please use /" + label + " set <PLAYER_NAME> <RANK_NAME>");
+                    sender.sendMessage("Please use /" + label + " set <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
@@ -100,14 +101,14 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 }
 
                 if (uuid == null) {
-                    player.sendMessage("Could not find player");
+                    sender.sendMessage("Could not find player");
                     return true;
                 }
 
                 String group = args[2];
 
                 if (!dataManager.groupExists(group)) {
-                    player.sendMessage("That group does not exist!");
+                    sender.sendMessage("That group does not exist!");
                     return true;
                 }
 
@@ -115,13 +116,13 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 dataManager.loadPlayerData(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
-                        coreSetCommandHandler(player, group, uuidString, data);
+                        coreSetCommandHandler(sender, group, uuidString, data);
                     }
 
                     @Override
                     public void error(IOException error) {
                         if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
-                            coreSetCommandHandler(player, group, uuidString, new PlayerData(new ArrayList<>()));
+                            coreSetCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
                         }
 
                         error.printStackTrace();
@@ -135,7 +136,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 String name = args[1];
 
                 if (args.length != 3) {
-                    player.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
+                    sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
@@ -151,14 +152,14 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 }
 
                 if (uuid == null) {
-                    player.sendMessage("Could not find player");
+                    sender.sendMessage("Could not find player");
                     return true;
                 }
 
                 String group = args[2];
 
                 if (!dataManager.groupExists(group)) {
-                    player.sendMessage("That group does not exist!");
+                    sender.sendMessage("That group does not exist!");
                     return true;
                 }
 
@@ -166,13 +167,13 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 dataManager.loadPlayerData(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
-                        coreAddCommandHandler(player, group, uuidString, data);
+                        coreAddCommandHandler(sender, group, uuidString, data);
                     }
 
                     @Override
                     public void error(IOException error) {
                         if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
-                            coreAddCommandHandler(player, group, uuidString, new PlayerData(new ArrayList<>()));
+                            coreAddCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
                             return;
                         }
 
@@ -187,7 +188,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 String name = args[1];
 
                 if (args.length != 2) {
-                    player.sendMessage("Please use /" + label + " get <PLAYER_NAME>");
+                    sender.sendMessage("Please use /" + label + " get <PLAYER_NAME>");
                     return true;
                 }
 
@@ -203,19 +204,19 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 }
 
                 if (uuid == null) {
-                    player.sendMessage("Could not find player");
+                    sender.sendMessage("Could not find player");
                     return true;
                 }
 
                 dataManager.loadPlayerData(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
-                        player.sendMessage("Groups from " + name + ": [" + String.join(", ", data.getGroups()) + "]");
+                        sender.sendMessage("Groups from " + name + ": [" + String.join(", ", data.getGroups()) + "]");
                     }
 
                     @Override
                     public void error(IOException error) {
-                        player.sendMessage("Could not load player data");
+                        sender.sendMessage("Could not load player data");
                     }
                 });
 
@@ -225,7 +226,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 String name = args[1];
 
                 if (args.length != 3) {
-                    player.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
+                    sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
@@ -241,7 +242,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 }
 
                 if (uuid == null) {
-                    player.sendMessage("Could not find player");
+                    sender.sendMessage("Could not find player");
                     return true;
                 }
 
@@ -253,17 +254,17 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                         List<String> groups = data.getGroups();
 
                         if (!groups.contains(group)) {
-                            player.sendMessage("does not have group.");
+                            sender.sendMessage("does not have group.");
                             return;
                         }
 
                         groups.remove(group);
-                        player.sendMessage("Successfully removed group " + group);
+                        sender.sendMessage("Successfully removed group " + group);
                     }
 
                     @Override
                     public void error(IOException error) {
-                        player.sendMessage("Player data not found.");
+                        sender.sendMessage("Player data not found.");
                     }
                 });
             }
@@ -273,11 +274,11 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         return true;
     }
 
-    private void coreSetCommandHandler(Player player, String group, String uuidString, PlayerData data) {
+    private void coreSetCommandHandler(CommandSender sender, String group, String uuidString, PlayerData data) {
         List<String> groups = data.getGroups();
 
         if (!groups.isEmpty() && groups.get(0).equals(group)) {
-            player.sendMessage("Already primary group");
+            sender.sendMessage("Already primary group");
             return;
         }
 
@@ -291,21 +292,21 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         dataManager.savePlayerData(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
-                player.sendMessage("Sucessfully saved");
+                sender.sendMessage("Sucessfully saved");
             }
 
             @Override
             public void error(IOException error) {
-                player.sendMessage("Saving failed");
+                sender.sendMessage("Saving failed");
             }
         });
     }
 
-    private void coreAddCommandHandler(Player player, String group, String uuidString, PlayerData data) {
+    private void coreAddCommandHandler(CommandSender sender, String group, String uuidString, PlayerData data) {
         List<String> groups = data.getGroups();
 
         if (groups.contains(group)) {
-            player.sendMessage("already has group.");
+            sender.sendMessage("already has group.");
             return;
         }
 
@@ -313,12 +314,12 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         dataManager.savePlayerData(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
-                player.sendMessage("Sucessfully saved");
+                sender.sendMessage("Sucessfully saved");
             }
 
             @Override
             public void error(IOException error) {
-                player.sendMessage("Saving failed");
+                sender.sendMessage("Saving failed");
             }
         });
     }
