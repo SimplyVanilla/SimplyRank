@@ -1,0 +1,11 @@
+main: net.simplyvanilla.simplyrank.SimplyRankPlugin
+name: SimplyRank
+author: zvwild
+version: 0.1.0
+
+depend:
+  - PlaceholderAPI
+
+commands:
+  simplyrank:
+    description: Rank management command
