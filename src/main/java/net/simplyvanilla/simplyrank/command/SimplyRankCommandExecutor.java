@@ -259,6 +259,11 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                         }
 
                         groups.remove(group);
+
+                        if (groups.isEmpty()) {
+                            groups.add("default");
+                        }
+
                         sender.sendMessage("Successfully removed group " + group);
                     }
 
@@ -288,6 +293,8 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         newGroups.add(group);
         newGroups.addAll(groups);
 
+        newGroups.remove("default");
+
         data.setGroups(newGroups);
         dataManager.savePlayerData(uuidString, data, new IOCallback<>() {
             @Override
@@ -311,6 +318,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         }
 
         groups.add(group);
+        groups.remove("default");
         dataManager.savePlayerData(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
