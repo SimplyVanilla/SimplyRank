@@ -123,6 +123,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     public void error(IOException error) {
                         if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
                             coreSetCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
+                            return;
                         }
 
                         error.printStackTrace();
