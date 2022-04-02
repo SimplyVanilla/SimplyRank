@@ -32,8 +32,8 @@ public final class DataManager {
     /**
      * <p>Loads the data from the specified user asynchronously and then runs the given callback on the main thread.</p>
      *
-     * @param uuid The player's uuid as a string
-     * @param callback   The callback to give the caller the ability to handle success and failure
+     * @param uuid     The player's uuid as a string
+     * @param callback The callback to give the caller the ability to handle success and failure
      * @return
      */
     public void loadPlayerData(UUID uuid, IOCallback<PlayerData, IOException> callback) {
@@ -97,9 +97,8 @@ public final class DataManager {
         if (playerData == null) {
             try (Reader fileReader = Files.newBufferedReader(getPlayerDataFile(uuid.toString()), StandardCharsets.UTF_8)) {
                 playerData = gson.fromJson(fileReader, PlayerData.class);
-
             } catch (IOException e) {
-                playerData = PlayerData.DEFAULT;
+                playerData = PlayerData.getDefault();
             }
             playerDataCache.put(uuid, playerData);
         }
@@ -121,6 +120,7 @@ public final class DataManager {
     }
 
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, IOException> callback) {
+        playerDataCache.put(UUID.fromString(uuidString), playerData);
         // Go into async
         Bukkit.getScheduler().runTaskAsynchronously(SimplyRankPlugin.getInstance(), () -> {
             try {
@@ -134,6 +134,7 @@ public final class DataManager {
     }
 
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, IOException> callback) {
+        groupDataCache.put(groupName, groupData);
         // Go into async
         Bukkit.getScheduler().runTaskAsynchronously(SimplyRankPlugin.getInstance(), () -> {
             try {

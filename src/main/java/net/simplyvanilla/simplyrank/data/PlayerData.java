@@ -6,8 +6,6 @@ import java.util.List;
 
 public class PlayerData {
 
-    public static final transient PlayerData DEFAULT = new PlayerData(new ArrayList<>(Collections.singleton("default")));
-
     private List<String> groups;
 
     public PlayerData() {
@@ -27,6 +25,10 @@ public class PlayerData {
 
     public void setGroups(List<String> groups) {
         this.groups = groups;
+    }
+
+    public static PlayerData getDefault() {
+        return new PlayerData(new ArrayList<>(Collections.singleton("default")));
     }
 
 }
