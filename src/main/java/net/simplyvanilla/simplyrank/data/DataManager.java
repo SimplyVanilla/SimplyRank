@@ -121,6 +121,7 @@ public final class DataManager {
     }
 
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, IOException> callback) {
+        playerDataCache.put(UUID.fromString(uuidString), playerData);
         // Go into async
         Bukkit.getScheduler().runTaskAsynchronously(SimplyRankPlugin.getInstance(), () -> {
             try {
@@ -134,6 +135,7 @@ public final class DataManager {
     }
 
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, IOException> callback) {
+        groupDataCache.put(groupName, groupData);
         // Go into async
         Bukkit.getScheduler().runTaskAsynchronously(SimplyRankPlugin.getInstance(), () -> {
             try {
