@@ -227,7 +227,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 String name = args[1];
 
                 if (args.length != 3) {
-                    sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
+                    sender.sendMessage("Please use /" + label + " rem <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
@@ -249,6 +249,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
 
                 String group = args[2];
 
+                UUID finalUuid = uuid;
                 dataManager.loadPlayerData(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
@@ -266,6 +267,18 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                         }
 
                         sender.sendMessage("Successfully removed group " + group);
+
+                        dataManager.savePlayerData(finalUuid.toString(), data, new IOCallback<>() {
+                            @Override
+                            public void success(Void data) {
+                                sender.sendMessage("Sucessfully saved");
+                            }
+
+                            @Override
+                            public void error(IOException error) {
+                                sender.sendMessage("Saving failed");
+                            }
+                        });
                     }
 
                     @Override
