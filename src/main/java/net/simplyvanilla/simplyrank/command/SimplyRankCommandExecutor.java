@@ -64,7 +64,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     }
 
                     GroupData groupData = new GroupData(color, prefix);
-                    dataManager.saveGroupData(name, groupData, new IOCallback<>() {
+                    dataManager.saveGroupDataAsync(name, groupData, new IOCallback<>() {
                         @Override
                         public void success(Void data) {
                             sender.sendMessage("Successfully created the group!");
@@ -113,7 +113,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 }
 
                 String uuidString = uuid.toString();
-                dataManager.loadPlayerData(uuid, new IOCallback<>() {
+                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
                         coreSetCommandHandler(sender, group, uuidString, data);
@@ -165,7 +165,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 }
 
                 String uuidString = uuid.toString();
-                dataManager.loadPlayerData(uuid, new IOCallback<>() {
+                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
                         coreAddCommandHandler(sender, group, uuidString, data);
@@ -209,7 +209,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     return true;
                 }
 
-                dataManager.loadPlayerData(uuid, new IOCallback<>() {
+                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
                         sender.sendMessage("Groups from " + name + ": [" + String.join(", ", data.getGroups()) + "]");
@@ -249,7 +249,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
 
                 String group = args[2];
 
-                dataManager.loadPlayerData(uuid, new IOCallback<>() {
+                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
                         List<String> groups = data.getGroups();
@@ -297,7 +297,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         newGroups.remove("default");
 
         data.setGroups(newGroups);
-        dataManager.savePlayerData(uuidString, data, new IOCallback<>() {
+        dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
                 sender.sendMessage("Sucessfully saved");
@@ -320,7 +320,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
 
         groups.add(group);
         groups.remove("default");
-        dataManager.savePlayerData(uuidString, data, new IOCallback<>() {
+        dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
                 sender.sendMessage("Sucessfully saved");

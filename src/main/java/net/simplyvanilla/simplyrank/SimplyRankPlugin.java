@@ -62,7 +62,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         if (!dataManager.groupExists("default")) {
             GroupData defaultData = new GroupData(ChatColor.GRAY, "Member ");
-            dataManager.saveGroupData("default", defaultData, new IOCallback<>() {
+            dataManager.saveGroupDataAsync("default", defaultData, new IOCallback<>() {
                 @Override
                 public void success(Void data) {
                     getLogger().info("Successfully created default group!");
