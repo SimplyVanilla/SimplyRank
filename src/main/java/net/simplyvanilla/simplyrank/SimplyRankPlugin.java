@@ -25,7 +25,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
     private static SimplyRankPlugin instance;
     private DataManager dataManager;
-    private SQLHandler sqlHandler;
+    private SQLHandler sqlHandler = null;
     private FileConfiguration config;
 
     @Override
@@ -41,13 +41,18 @@ public class SimplyRankPlugin extends JavaPlugin {
             return;
         }
 
-        try {
-            sqlHandler = createSQLHandlerFromConfig(config);
-        } catch (NullPointerException e) {
-            getLogger().log(Level.SEVERE, "Could not establish connection to mysql database. Presumably, there are credentials missing!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+        boolean useSql = config.getBoolean("mysql.active");
+
+        if (useSql) {
+            try {
+                sqlHandler = createSQLHandlerFromConfig(config);
+            } catch (NullPointerException e) {
+                getLogger().log(Level.SEVERE, "Could not establish connection to mysql database. Presumably, there are credentials missing!");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
+
 
 
         Gson gson = new GsonBuilder()
@@ -82,8 +87,12 @@ public class SimplyRankPlugin extends JavaPlugin {
             }
         }
 
-        //dataManager = new DataManager(gson, groupFolder, playerFolder); <-- This would be used to create a data manager that reads from disk
-        dataManager = new DataManager(gson, sqlHandler); //Using a data manager that uses an sql database.
+        if (useSql) {
+            dataManager = new DataManager(gson, sqlHandler); //Using a data manager that uses an sql database.
+        }
+        else {
+            dataManager = new DataManager(gson, groupFolder, playerFolder); //Using a data manger that reads data from disk
+        }
 
         if (!dataManager.groupExists("default")) {
             GroupData defaultData = new GroupData(ChatColor.GRAY, "Member ");
@@ -108,7 +117,8 @@ public class SimplyRankPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
-        sqlHandler.close();
+        if (sqlHandler != null)
+            sqlHandler.close();
     }
 
     public DataManager getDataManager() {
