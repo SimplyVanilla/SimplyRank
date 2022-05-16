@@ -237,7 +237,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     return true;
                 }
 
-                UUID uuidLookup = null; //Has to be final to be accessable in callback
+                UUID uuidLookup = null;
                 Player target = Bukkit.getPlayer(name);
                 if (target != null) {
                     uuidLookup = target.getUniqueId();
@@ -248,7 +248,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     }
                 }
 
-                final String group = args[2];
+                final String group = args[2]; //Has to be final to be accessible in callback
                 final UUID uuid = uuidLookup != null ? uuidLookup : UUID.fromString(name);  //Working both by using uuid and name
                 //First, fetch the current data
                 dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
