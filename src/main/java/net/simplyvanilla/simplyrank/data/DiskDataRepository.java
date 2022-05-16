@@ -25,7 +25,7 @@ public class DiskDataRepository implements DataRepository{
     }
 
     @Override
-    public PlayerData loadPlayerData(UUID uuid, IOCallback<PlayerData, IOException> callback) {
+    public PlayerData loadPlayerData(UUID uuid, IOCallback<PlayerData, Exception> callback) {
 
         String uuidString = uuid.toString();
 
@@ -40,7 +40,7 @@ public class DiskDataRepository implements DataRepository{
     }
 
     @Override
-    public GroupData loadGroupData(String groupName, IOCallback<GroupData, IOException> callback) {
+    public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
 
         try (Reader fileReader = Files.newBufferedReader(getGroupFile(groupName), StandardCharsets.UTF_8)) {
             GroupData groupData = gson.fromJson(fileReader, GroupData.class);
@@ -54,7 +54,7 @@ public class DiskDataRepository implements DataRepository{
     }
 
     @Override
-    public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, IOException> callback) {
+    public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
         try {
             Files.writeString(getPlayerDataFile(uuidString), gson.toJson(playerData), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 
@@ -70,7 +70,7 @@ public class DiskDataRepository implements DataRepository{
     }
 
     @Override
-    public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, IOException> callback) {
+    public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
         try {
             Files.writeString(getGroupFile(groupName), gson.toJson(groupData), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
             // Switch back to sync

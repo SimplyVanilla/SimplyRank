@@ -14,11 +14,15 @@ public final class DataManager {
 
     private DataRepository repository;
 
-    final Map<UUID, PlayerData> playerDataCache = new HashMap<>();
-    final Map<String, GroupData> groupDataCache = new HashMap<>();
+    private final Map<UUID, PlayerData> playerDataCache = new HashMap<>();
+    private final Map<String, GroupData> groupDataCache = new HashMap<>();
 
     public DataManager(Gson gson, Path groupFolder, Path playerDataFolder) {
         repository = new DiskDataRepository(gson, groupFolder, playerDataFolder);
+    }
+
+    public DataManager(Gson gson, SQLHandler sqlHandler) {
+        repository = new SQLRepository(sqlHandler, gson);
     }
 
     /**
@@ -28,7 +32,7 @@ public final class DataManager {
      * @param callback The callback to give the caller the ability to handle success and failure
      * @return
      */
-    public void loadPlayerDataAsync(UUID uuid, IOCallback<PlayerData, IOException> callback) {
+    public void loadPlayerDataAsync(UUID uuid, IOCallback<PlayerData, Exception> callback) {
         PlayerData cached = playerDataCache.get(uuid);
 
         if (cached != null) {
@@ -57,7 +61,7 @@ public final class DataManager {
      * @param groupName The name of the group to load
      * @param callback  The callback which is called after the data has been loaded or failed to be loaded
      */
-    public void loadGroupDataAsync(String groupName, IOCallback<GroupData, IOException> callback) {
+    public void loadGroupDataAsync(String groupName, IOCallback<GroupData, Exception> callback) {
         GroupData cached = groupDataCache.get(groupName);
 
         if (cached != null) {
@@ -100,7 +104,7 @@ public final class DataManager {
         return groupData;
     }
 
-    public void savePlayerDataAsync(String uuidString, PlayerData playerData, IOCallback<Void, IOException> callback) {
+    public void savePlayerDataAsync(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
         playerDataCache.put(UUID.fromString(uuidString), playerData);
         // Go into async
         Bukkit.getScheduler().runTaskAsynchronously(SimplyRankPlugin.getInstance(), () -> {
@@ -108,7 +112,7 @@ public final class DataManager {
         });
     }
 
-    public void saveGroupDataAsync(String groupName, GroupData groupData, IOCallback<Void, IOException> callback) {
+    public void saveGroupDataAsync(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
         groupDataCache.put(groupName, groupData);
         // Go into async
         Bukkit.getScheduler().runTaskAsynchronously(SimplyRankPlugin.getInstance(), () -> {

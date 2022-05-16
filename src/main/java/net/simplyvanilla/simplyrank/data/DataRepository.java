@@ -9,11 +9,11 @@ public interface DataRepository {
         All methods are synchronous, unless specified
 
     */
-    public PlayerData loadPlayerData(UUID uuid, IOCallback<PlayerData, IOException> callback);
-    public GroupData loadGroupData(String groupName, IOCallback<GroupData, IOException> callback);
+    public PlayerData loadPlayerData(UUID uuid, IOCallback<PlayerData, Exception> callback);
+    public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback);
 
-    public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, IOException> callback);
-    public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, IOException> callback);
+    public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback);
+    public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback);
 
     public boolean groupExists(String groupName);
 

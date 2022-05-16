@@ -71,7 +71,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                         }
 
                         @Override
-                        public void error(IOException error) {
+                        public void error(Exception error) {
                             sender.sendMessage("An error occurred!");
                         }
                     });
@@ -120,7 +120,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     }
 
                     @Override
-                    public void error(IOException error) {
+                    public void error(Exception error) {
                         if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
                             coreSetCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
                             return;
@@ -172,7 +172,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     }
 
                     @Override
-                    public void error(IOException error) {
+                    public void error(Exception error) {
                         if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
                             coreAddCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
                             return;
@@ -216,7 +216,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     }
 
                     @Override
-                    public void error(IOException error) {
+                    public void error(Exception error) {
                         sender.sendMessage("Could not load player data");
                     }
                 });
@@ -269,7 +269,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     }
 
                     @Override
-                    public void error(IOException error) {
+                    public void error(Exception error) {
                         sender.sendMessage("Player data not found.");
                     }
                 });
@@ -304,7 +304,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             }
 
             @Override
-            public void error(IOException error) {
+            public void error(Exception error) {
                 sender.sendMessage("Saving failed");
             }
         });
@@ -327,7 +327,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             }
 
             @Override
-            public void error(IOException error) {
+            public void error(Exception error) {
                 sender.sendMessage("Saving failed");
             }
         });

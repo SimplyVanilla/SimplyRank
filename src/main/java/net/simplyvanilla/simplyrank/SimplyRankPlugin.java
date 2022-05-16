@@ -7,6 +7,7 @@ import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
 import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.GroupData;
 import net.simplyvanilla.simplyrank.data.IOCallback;
+import net.simplyvanilla.simplyrank.data.SQLHandler;
 import net.simplyvanilla.simplyrank.gson.ChatColorGsonDeserializer;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import org.bukkit.ChatColor;
@@ -21,6 +22,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
     private static SimplyRankPlugin instance;
     private DataManager dataManager;
+    private SQLHandler sqlHandler;
 
     @Override
     public void onEnable() {
@@ -58,7 +60,9 @@ public class SimplyRankPlugin extends JavaPlugin {
             }
         }
 
-        dataManager = new DataManager(gson, groupFolder, playerFolder);
+        //dataManager = new DataManager(gson, groupFolder, playerFolder);
+        sqlHandler = new SQLHandler("localhost", "minecraft-simplyrank", "root", "1234", "3366");
+        dataManager = new DataManager(gson, sqlHandler);
 
         if (!dataManager.groupExists("default")) {
             GroupData defaultData = new GroupData(ChatColor.GRAY, "Member ");
@@ -69,7 +73,7 @@ public class SimplyRankPlugin extends JavaPlugin {
                 }
 
                 @Override
-                public void error(IOException error) {
+                public void error(Exception error) {
                     getLogger().info("There was an error creating the default group");
                 }
             });
@@ -83,6 +87,7 @@ public class SimplyRankPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
+        sqlHandler.close();
     }
 
     public DataManager getDataManager() {
