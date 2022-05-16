@@ -28,6 +28,12 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         this.dataManager = dataManager;
     }
 
+
+    /*
+        TODO: Major refactoring of onCommand method is severely necessary
+        It will become pretty unmaintainable
+     */
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof ConsoleCommandSender)) {
@@ -231,24 +237,20 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                     return true;
                 }
 
-                UUID uuid = null;
+                UUID uuidLookup = null; //Has to be final to be accessable in callback
                 Player target = Bukkit.getPlayer(name);
                 if (target != null) {
-                    uuid = target.getUniqueId();
+                    uuidLookup = target.getUniqueId();
                 } else {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(name);
                     if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
-                        uuid = offlinePlayer.getUniqueId();
+                        uuidLookup = offlinePlayer.getUniqueId();
                     }
                 }
 
-                if (uuid == null) {
-                    sender.sendMessage("Could not find player");
-                    return true;
-                }
-
-                String group = args[2];
-
+                final String group = args[2];
+                final UUID uuid = uuidLookup != null ? uuidLookup : UUID.fromString(name);  //Working both by using uuid and name
+                //First, fetch the current data
                 dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
@@ -265,7 +267,20 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                             groups.add("default");
                         }
 
-                        sender.sendMessage("Successfully removed group " + group);
+                        data.setGroups(groups);
+
+                        //Next, replace the old data with the new one. Both asynchronous to save performance
+                        dataManager.savePlayerDataAsync(uuid.toString(), data, new IOCallback<>() {
+                            @Override
+                            public void success(Void data) {
+                                sender.sendMessage("Group successfully removed!");
+                            }
+
+                            @Override
+                            public void error(Exception error) {
+                                sender.sendMessage("Could not remove group!");
+                            }
+                        });
                     }
 
                     @Override
@@ -279,6 +294,8 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
 
         return true;
     }
+
+
 
     private void coreSetCommandHandler(CommandSender sender, String group, String uuidString, PlayerData data) {
         List<String> groups = data.getGroups();
@@ -300,7 +317,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
-                sender.sendMessage("Sucessfully saved");
+                sender.sendMessage("Successfully saved");
             }
 
             @Override
