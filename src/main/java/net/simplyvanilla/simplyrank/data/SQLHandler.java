@@ -1,6 +1,9 @@
 package net.simplyvanilla.simplyrank.data;
 
+import org.bukkit.Bukkit;
+
 import java.sql.*;
+import java.util.logging.Level;
 
 public class SQLHandler {
 
@@ -28,6 +31,17 @@ public class SQLHandler {
 
     public void connect() {
         try {
+            Bukkit.getLogger().log(Level.INFO, String.format(
+                """
+                Trying to establish mysql connection with:
+                HOST: '%s:%s',
+                DATABASE: '%s',
+                USER: '%s',
+                PASSWORD, starting with '%s'
+                """,
+                HOST, PORT, DATABASE, USERNAME, PASSWORD.charAt(0)
+                ));
+
             connection = DriverManager.getConnection(
                 "jdbc:mysql://" + HOST + ":" + PORT + " /" + DATABASE + "?autoReconnect=true",
                 USERNAME,
