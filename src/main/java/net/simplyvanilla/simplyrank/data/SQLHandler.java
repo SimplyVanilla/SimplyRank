@@ -37,9 +37,8 @@ public class SQLHandler {
                 HOST: '%s:%s',
                 DATABASE: '%s',
                 USER: '%s',
-                PASSWORD, starting with '%s'
                 """,
-                HOST, PORT, DATABASE, USERNAME, PASSWORD.charAt(0)
+                HOST, PORT, DATABASE, USERNAME
                 ));
 
             connection = DriverManager.getConnection(
@@ -73,10 +72,12 @@ public class SQLHandler {
     }
 
     public ResultSet query(String qry) throws SQLException {
-        ResultSet rs = null;
+        ResultSet rs;
 
         Statement st = connection.createStatement();
         rs = st.executeQuery(qry);
+
+        st.closeOnCompletion();
 
         return rs;
     }

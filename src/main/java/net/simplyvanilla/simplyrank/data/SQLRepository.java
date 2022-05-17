@@ -29,9 +29,9 @@ public class SQLRepository implements DataRepository {
         if (!playerExists(uuid))
             createPlayer(uuid);
 
-        try {
-            String qry = String.format("SELECT data FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
-            var result = sql.query(qry);
+        String qry = String.format("SELECT data FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
+
+        try (var result = sql.query(qry);) {
 
             if (!result.next()) {
                 return null;
@@ -55,10 +55,10 @@ public class SQLRepository implements DataRepository {
 
     @Override
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
-        try {
-            String qry = String.format("SELECT data FROM %s WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
-            var result = sql.query(qry);
 
+        String qry = String.format("SELECT data FROM %s WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
+
+        try (var result = sql.query(qry)) {
             if (!result.next()) {
                 return null;
             }
@@ -68,13 +68,13 @@ public class SQLRepository implements DataRepository {
 
             var groupData = gson.fromJson(jsonString, GroupData.class);
             return groupData;
-
         } catch (SQLException e) {
             if (callback != null)
                 callback.error(e);
             else
                 e.printStackTrace();
         }
+
 
         return null;
     }
@@ -84,11 +84,10 @@ public class SQLRepository implements DataRepository {
         if (!playerExists(uuidString))
             createPlayer(uuidString);
 
+        String qry = String.format("UPDATE %s SET data='%s' WHERE uuid='%s'",
+            SQLHandler.TABLE_PLAYERS_NAME, gson.toJson(playerData), uuidString);
 
         try {
-            String qry = String.format("UPDATE %s SET data='%s' WHERE uuid='%s'",
-                SQLHandler.TABLE_PLAYERS_NAME, gson.toJson(playerData), uuidString);
-
             sql.update(qry);
 
             //Sync success
@@ -108,7 +107,6 @@ public class SQLRepository implements DataRepository {
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
         String qry = String.format("UPDATE %s SET data='%s' WHERE name='%s'",
             SQLHandler.TABLE_GROUPS_NAME, gson.toJson(groupData), groupName);
-
 
         try {
             if (groupExists(groupName)) {
@@ -132,10 +130,9 @@ public class SQLRepository implements DataRepository {
 
     @Override
     public boolean groupExists(String name) {
-        try {
-            String qry = String.format("SELECT * FROM %s WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME ,name);
-            ResultSet result = sql.query(qry);
 
+        String qry = String.format("SELECT * FROM %s WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME ,name);
+        try (ResultSet result = sql.query(qry)) {
             return result.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -163,10 +160,9 @@ public class SQLRepository implements DataRepository {
     }
 
     public boolean playerExists(String uuidString) {
-        try {
-            String qry = String.format("SELECT * FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, uuidString);
-            ResultSet result = sql.query(qry);
 
+        String qry = String.format("SELECT * FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, uuidString);
+        try (ResultSet result = sql.query(qry);) {
             return result.next();
         } catch (SQLException e) {
             e.printStackTrace();
