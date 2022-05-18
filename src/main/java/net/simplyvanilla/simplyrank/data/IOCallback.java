@@ -21,5 +21,6 @@ public interface IOCallback<T, E> {
      * @param error the error
      */
     void error(E error);
+    
 
 }
