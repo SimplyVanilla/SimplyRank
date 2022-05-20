@@ -1,14 +1,11 @@
 package net.simplyvanilla.simplyrank.data;
 
-import org.bukkit.Bukkit;
-
 import java.sql.*;
-import java.util.logging.Level;
 
 public class SQLHandler {
 
     public static final String TABLE_PLAYERS_NAME = "Players";
-    public static final String TABLE_GROUPS_NAME = "GroupData";
+    public static final String TABLE_GROUPS_NAME = "Groups";
 
     private final String HOST;
     private final String DATABASE;
@@ -31,16 +28,6 @@ public class SQLHandler {
 
     public void connect() {
         try {
-            Bukkit.getLogger().log(Level.INFO, String.format(
-                """
-                Trying to establish mysql connection with:
-                HOST: '%s:%s',
-                DATABASE: '%s',
-                USER: '%s',
-                """,
-                HOST, PORT, DATABASE, USERNAME
-                ));
-
             connection = DriverManager.getConnection(
                 "jdbc:mysql://" + HOST + ":" + PORT + " /" + DATABASE + "?autoReconnect=true",
                 USERNAME,
@@ -86,24 +73,30 @@ public class SQLHandler {
 
        String cmdPlayers = String.format(
            """
-              CREATE TABLE if not exists %s
-              (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-                uuid TEXT NOT NULL,
-                data TEXT NOT NULL,
-                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
+             CREATE TABLE if not exists `%s` (
+                `id` int unsigned NOT NULL AUTO_INCREMENT,
+                `uuid` char(36) NOT NULL,
+                `data` text NOT NULL,
+                `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `uuid` (`uuid`)
+              )
            """,
            TABLE_PLAYERS_NAME
        );
 
         String cmdGroups = String.format(
             """
-              CREATE TABLE if not exists %s
-              (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-                name TEXT NOT NULL,
-                data TEXT NOT NULL,
-                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
+              CREATE TABLE if not exists `%s` (
+                `id` int unsigned NOT NULL AUTO_INCREMENT,
+                `name` varchar(255) NOT NULL,
+                `data` TEXT NOT NULL,
+                `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `name` (`name`)
+              )
            """,
             TABLE_GROUPS_NAME
         );

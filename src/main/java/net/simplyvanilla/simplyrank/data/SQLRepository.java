@@ -3,10 +3,7 @@ package net.simplyvanilla.simplyrank.data;
 import com.google.gson.Gson;
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -29,7 +26,7 @@ public class SQLRepository implements DataRepository {
         if (!playerExists(uuid))
             createPlayer(uuid);
 
-        String qry = String.format("SELECT data FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
+        String qry = String.format("SELECT data FROM `%s` WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
 
         try (var result = sql.query(qry);) {
 
@@ -56,7 +53,7 @@ public class SQLRepository implements DataRepository {
     @Override
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
 
-        String qry = String.format("SELECT data FROM %s WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
+        String qry = String.format("SELECT data FROM `%s` WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
 
         try (var result = sql.query(qry)) {
             if (!result.next()) {
@@ -84,7 +81,7 @@ public class SQLRepository implements DataRepository {
         if (!playerExists(uuidString))
             createPlayer(uuidString);
 
-        String qry = String.format("UPDATE %s SET data='%s' WHERE uuid='%s'",
+        String qry = String.format("UPDATE `%s` SET data='%s' WHERE uuid='%s'",
             SQLHandler.TABLE_PLAYERS_NAME, gson.toJson(playerData), uuidString);
 
         try {
@@ -105,7 +102,7 @@ public class SQLRepository implements DataRepository {
 
     @Override
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
-        String qry = String.format("UPDATE %s SET data='%s' WHERE name='%s'",
+        String qry = String.format("UPDATE `%s` SET data='%s' WHERE name='%s'",
             SQLHandler.TABLE_GROUPS_NAME, gson.toJson(groupData), groupName);
 
         try {
@@ -131,7 +128,7 @@ public class SQLRepository implements DataRepository {
     @Override
     public boolean groupExists(String name) {
 
-        String qry = String.format("SELECT * FROM %s WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME ,name);
+        String qry = String.format("SELECT * FROM `%s` WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME ,name);
         try (ResultSet result = sql.query(qry)) {
             return result.next();
         } catch (SQLException e) {
@@ -146,7 +143,7 @@ public class SQLRepository implements DataRepository {
 
         String qry = String.format(
             """
-            INSERT INTO %s
+            INSERT INTO `%s`
             (name, data)
             VALUES
             ('%s','%s')
@@ -161,7 +158,7 @@ public class SQLRepository implements DataRepository {
 
     public boolean playerExists(String uuidString) {
 
-        String qry = String.format("SELECT * FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, uuidString);
+        String qry = String.format("SELECT * FROM `%s` WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, uuidString);
         try (ResultSet result = sql.query(qry);) {
             return result.next();
         } catch (SQLException e) {
@@ -181,7 +178,7 @@ public class SQLRepository implements DataRepository {
 
         String qry = String.format(
             """
-            INSERT INTO %s
+            INSERT INTO `%s`
             (uuid, data)
             VALUES
             ('%s','%s')
