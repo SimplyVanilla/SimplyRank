@@ -3,8 +3,6 @@
 
 mysql:
   active: false
-  host: 'localhost'
-  port: '3306'
+  url: 'jdbc:mysql://127.0.0.1:3306/simplyrank?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false'
   username: 'user'
   password: '1234'
-  database: 'simplyrank'

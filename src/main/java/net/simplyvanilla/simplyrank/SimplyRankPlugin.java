@@ -148,19 +148,15 @@ public class SimplyRankPlugin extends JavaPlugin {
     private SQLHandler createSQLHandlerFromConfig(FileConfiguration config) {
 
         try {
-            String port = config.getString("mysql.port");
-            String database = config.getString("mysql.database");
+            String url = config.getString("mysql.url");
             String password = config.getString("mysql.password");
             String user = config.getString("mysql.username");
-            String host = config.getString("mysql.host");
 
-            return new SQLHandler(host, database, user, password, port);
+            return new SQLHandler(url, user, password);
 
         } catch (NullPointerException e) {
             throw e; //If there are credentials missing.
         }
     }
-
-
 
 }

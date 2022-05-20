@@ -4,23 +4,19 @@ import java.sql.*;
 
 public class SQLHandler {
 
-    public static final String TABLE_PLAYERS_NAME = "Players";
-    public static final String TABLE_GROUPS_NAME = "Groups";
+    public static final String TABLE_PLAYERS_NAME = "players";
+    public static final String TABLE_GROUPS_NAME = "groups";
 
-    private final String HOST;
-    private final String DATABASE;
+    private final String URL;
     private final String USERNAME;
     private final String PASSWORD;
-    private final String PORT;
 
     private Connection connection;
 
-    public SQLHandler(String host, String database, String user, String password, String port) {
-        this.HOST = host;
-        this.DATABASE = database;
+    public SQLHandler(String url, String user, String password) {
+        this.URL = url;
         this.USERNAME = user;
         this.PASSWORD = password;
-        this.PORT = port;
 
         connect();
         initTables();
@@ -29,7 +25,7 @@ public class SQLHandler {
     public void connect() {
         try {
             connection = DriverManager.getConnection(
-                "jdbc:mysql://" + HOST + ":" + PORT + " /" + DATABASE + "?autoReconnect=true",
+                URL,
                 USERNAME,
                 PASSWORD);
         } catch (SQLException e) {
