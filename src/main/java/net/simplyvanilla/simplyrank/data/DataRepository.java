@@ -1,6 +1,5 @@
 package net.simplyvanilla.simplyrank.data;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public interface DataRepository {
