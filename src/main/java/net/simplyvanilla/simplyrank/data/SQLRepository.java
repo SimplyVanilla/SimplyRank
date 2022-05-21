@@ -27,7 +27,7 @@ public class SQLRepository implements DataRepository {
         var strUUID = uuid.toString();
 
         if (!playerExists(uuid))
-            createPlayer(uuid);
+            return PlayerData.getDefault();
 
         String qry = String.format("SELECT data FROM %s WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
 
