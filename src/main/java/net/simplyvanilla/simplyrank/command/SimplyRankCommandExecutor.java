@@ -4,18 +4,15 @@ import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.GroupData;
 import net.simplyvanilla.simplyrank.data.IOCallback;
 import net.simplyvanilla.simplyrank.data.PlayerData;
-import org.bukkit.Bukkit;
+import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,26 +85,18 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             }
 
             case "set" -> {
-                String name = args[1];
+                String input = args[1];
 
                 if (args.length != 3) {
                     sender.sendMessage("Please use /" + label + " set <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
-                UUID uuid = null;
-                Player target = Bukkit.getPlayer(name);
-                if (target != null) {
-                    uuid = target.getUniqueId();
-                } else {
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(name);
-                    if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
-                        uuid = offlinePlayer.getUniqueId();
-                    }
-                }
+                final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage("Could not find player");
+                    sender.sendMessage(ChatColor.RED
+                        + "Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
@@ -140,26 +129,18 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             }
 
             case "add" -> {
-                String name = args[1];
+                String input = args[1];
 
                 if (args.length != 3) {
                     sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
-                UUID uuid = null;
-                Player target = Bukkit.getPlayer(name);
-                if (target != null) {
-                    uuid = target.getUniqueId();
-                } else {
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(name);
-                    if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
-                        uuid = offlinePlayer.getUniqueId();
-                    }
-                }
+                final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage("Could not find player");
+                    sender.sendMessage(ChatColor.RED
+                        + "Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
@@ -192,33 +173,25 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             }
 
             case "get" -> {
-                String name = args[1];
+                String input = args[1];
 
                 if (args.length != 2) {
                     sender.sendMessage("Please use /" + label + " get <PLAYER_NAME>");
                     return true;
                 }
 
-                UUID uuid = null;
-                Player target = Bukkit.getPlayer(name);
-                if (target != null) {
-                    uuid = target.getUniqueId();
-                } else {
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(name);
-                    if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
-                        uuid = offlinePlayer.getUniqueId();
-                    }
-                }
+                final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage("Could not find player");
+                    sender.sendMessage(ChatColor.RED
+                        + "Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
                 dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
                     public void success(PlayerData data) {
-                        sender.sendMessage("Groups from " + name + ": [" + String.join(", ", data.getGroups()) + "]");
+                        sender.sendMessage("Groups from " + input + ": [" + String.join(", ", data.getGroups()) + "]");
                     }
 
                     @Override
@@ -230,26 +203,23 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             }
 
             case "rem" -> {
-                String name = args[1];
+                String input = args[1];
 
                 if (args.length != 3) {
                     sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
                     return true;
                 }
 
-                UUID uuidLookup = null;
-                Player target = Bukkit.getPlayer(name);
-                if (target != null) {
-                    uuidLookup = target.getUniqueId();
-                } else {
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(name);
-                    if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
-                        uuidLookup = offlinePlayer.getUniqueId();
-                    }
-                }
 
                 final String group = args[2]; //Has to be final to be accessible in callback
-                final UUID uuid = uuidLookup != null ? uuidLookup : UUID.fromString(name);  //Working both by using uuid and name
+                final UUID uuid = PlayerUtils.resolveUUID(input);
+
+                if (uuid == null) {
+                    sender.sendMessage(ChatColor.RED
+                        + "Could not find player! (Neither by name, nor by UUID");
+                    return true;
+                }
+
                 //First, fetch the current data
                 dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
                     @Override
@@ -305,15 +275,14 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             return;
         }
 
-        groups.remove(group);
+        if (groups.isEmpty()) {
+            groups.add(group);
+        }
+        else {
+            groups.set(0, group);
+        }
 
-        List<String> newGroups = new ArrayList<>();
-        newGroups.add(group);
-        newGroups.addAll(groups);
-
-        newGroups.remove("default");
-
-        data.setGroups(newGroups);
+        data.setGroups(groups);
         dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {

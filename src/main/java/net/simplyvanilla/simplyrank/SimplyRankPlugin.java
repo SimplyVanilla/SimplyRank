@@ -54,7 +54,6 @@ public class SimplyRankPlugin extends JavaPlugin {
         }
 
 
-
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(new TypeToken<ChatColor>(){}.getType(), new ChatColorGsonDeserializer())
@@ -68,29 +67,29 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         Path dataFolderPath = dataFolder.toPath();
 
-        Path groupFolder = dataFolderPath.resolve("groups");
-
-        if (!Files.exists(groupFolder)) {
-            try {
-                Files.createDirectories(groupFolder);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Path playerFolder = dataFolderPath.resolve("players");
-        if (!Files.exists(playerFolder)) {
-            try {
-                Files.createDirectories(playerFolder);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         if (useSql) {
             dataManager = new DataManager(gson, sqlHandler); //Using a data manager that uses an sql database.
         }
         else {
+            Path groupFolder = dataFolderPath.resolve("groups");
+
+            if (!Files.exists(groupFolder)) {
+                try {
+                    Files.createDirectories(groupFolder);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Path playerFolder = dataFolderPath.resolve("players");
+            if (!Files.exists(playerFolder)) {
+                try {
+                    Files.createDirectories(playerFolder);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             dataManager = new DataManager(gson, groupFolder, playerFolder); //Using a data manger that reads data from disk
         }
 
