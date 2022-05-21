@@ -23,19 +23,16 @@ public class SQLRepository implements DataRepository {
 
         var strUUID = uuid.toString();
 
-        if (!playerExists(uuid))
-            createPlayer(uuid);
-
-        String qry = String.format("SELECT data FROM `%s` WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
+        String qry = String.format("SELECT `data` FROM `%s` WHERE `uuid` = '%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
 
         try (var result = sql.query(qry);) {
 
             if (!result.next()) {
-                return null;
+                return PlayerData.getDefault();
             }
 
             String jsonString = result.getString("data");
-            if (jsonString == null) return null;
+            if (jsonString == null) return PlayerData.getDefault();;
 
             var playerData = gson.fromJson(jsonString, PlayerData.class);
             return playerData;
@@ -53,7 +50,7 @@ public class SQLRepository implements DataRepository {
     @Override
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
 
-        String qry = String.format("SELECT data FROM `%s` WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
+        String qry = String.format("SELECT `data` FROM `%s` WHERE `name` = '%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
 
         try (var result = sql.query(qry)) {
             if (!result.next()) {
@@ -78,11 +75,10 @@ public class SQLRepository implements DataRepository {
 
     @Override
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
-        if (!playerExists(uuidString))
-            createPlayer(uuidString);
 
-        String qry = String.format("UPDATE `%s` SET data='%s' WHERE uuid='%s'",
-            SQLHandler.TABLE_PLAYERS_NAME, gson.toJson(playerData), uuidString);
+        String qry = String.format(
+            "INSERT INTO `%s` (`uuid`, `data`) VALUES ('%s', '%s') ON DUPLICATE KEY UPDATE `data` = VALUE(`data`)",
+            SQLHandler.TABLE_PLAYERS_NAME, uuidString, gson.toJson(playerData));
 
         try {
             sql.update(qry);
@@ -102,16 +98,13 @@ public class SQLRepository implements DataRepository {
 
     @Override
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
-        String qry = String.format("UPDATE `%s` SET data='%s' WHERE name='%s'",
-            SQLHandler.TABLE_GROUPS_NAME, gson.toJson(groupData), groupName);
+
+        String qry = String.format(
+            "INSERT INTO `%s` (`name`, `data`) VALUES ('%s', '%s') ON DUPLICATE KEY UPDATE `data` = VALUE(`data`)",
+            SQLHandler.TABLE_GROUPS_NAME, groupName, gson.toJson(groupData));
 
         try {
-            if (groupExists(groupName)) {
-                sql.update(qry);
-            }
-            else {
-                createGroup(groupName, groupData);
-            }
+            sql.update(qry);
 
             //Sync success
             if (callback != null)
@@ -128,7 +121,7 @@ public class SQLRepository implements DataRepository {
     @Override
     public boolean groupExists(String name) {
 
-        String qry = String.format("SELECT * FROM `%s` WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME ,name);
+        String qry = String.format("SELECT * FROM `%s` WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, name);
         try (ResultSet result = sql.query(qry)) {
             return result.next();
         } catch (SQLException e) {
@@ -136,67 +129,6 @@ public class SQLRepository implements DataRepository {
         }
 
         return false;
-    }
-
-    public void createGroup(String name, GroupData data) throws SQLException {
-        String json = gson.toJson(data);
-
-        String qry = String.format(
-            """
-            INSERT INTO `%s`
-            (name, data)
-            VALUES
-            ('%s','%s')
-            """,
-            SQLHandler.TABLE_GROUPS_NAME,
-            name,
-            json
-        );
-
-        sql.update(qry);
-    }
-
-    public boolean playerExists(String uuidString) {
-
-        String qry = String.format("SELECT * FROM `%s` WHERE uuid='%s'", SQLHandler.TABLE_PLAYERS_NAME, uuidString);
-        try (ResultSet result = sql.query(qry);) {
-            return result.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public boolean playerExists(UUID uuid) {
-        return playerExists(uuid.toString());
-    }
-
-    public void createPlayer(String uuidString) {
-        var data = PlayerData.getDefault();
-        String json = gson.toJson(data);
-
-        String qry = String.format(
-            """
-            INSERT INTO `%s`
-            (uuid, data)
-            VALUES
-            ('%s','%s')
-            """,
-            SQLHandler.TABLE_PLAYERS_NAME,
-            uuidString,
-            json
-        );
-
-        try {
-            sql.update(qry);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createPlayer(UUID uuid) {
-        createPlayer(uuid.toString());
     }
 
 }
