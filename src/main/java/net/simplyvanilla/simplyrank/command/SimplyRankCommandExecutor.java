@@ -305,15 +305,14 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             return;
         }
 
-        groups.remove(group);
+        if (groups.isEmpty()) {
+            groups.add(group);
+        }
+        else {
+            groups.set(0, group);
+        }
 
-        List<String> newGroups = new ArrayList<>();
-        newGroups.add(group);
-        newGroups.addAll(groups);
-
-        newGroups.remove("default");
-
-        data.setGroups(newGroups);
+        data.setGroups(groups);
         dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
             @Override
             public void success(Void data) {
