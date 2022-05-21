@@ -95,8 +95,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage(ChatColor.RED
-                        + "Could not find player! (Neither by name, nor by UUID");
+                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
@@ -139,8 +138,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage(ChatColor.RED
-                        + "Could not find player! (Neither by name, nor by UUID");
+                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
@@ -183,8 +181,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage(ChatColor.RED
-                        + "Could not find player! (Neither by name, nor by UUID");
+                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
@@ -215,8 +212,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                 final UUID uuid = PlayerUtils.resolveUUID(input);
 
                 if (uuid == null) {
-                    sender.sendMessage(ChatColor.RED
-                        + "Could not find player! (Neither by name, nor by UUID");
+                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
                     return true;
                 }
 
