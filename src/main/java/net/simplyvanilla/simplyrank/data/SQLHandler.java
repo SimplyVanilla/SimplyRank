@@ -109,7 +109,7 @@ public class SQLHandler {
     public PreparedStatement prepareStatement(String qry, String... parameters) throws SQLException {
         var statement = prepareStatement(qry);
 
-        for (int i = 1; i<=parameters.length; i++) {
+        for (int i = 0; i < parameters.length; i++) {
             String s = parameters[i];
             statement.setString(i, s);
         }
