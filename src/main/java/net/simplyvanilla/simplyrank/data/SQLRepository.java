@@ -23,9 +23,10 @@ public class SQLRepository implements DataRepository {
 
         var strUUID = uuid.toString();
 
-        String qry = String.format("SELECT `data` FROM `%s` WHERE `uuid` = '%s'", SQLHandler.TABLE_PLAYERS_NAME, strUUID);
+        String qry = "SELECT `data` FROM `?` WHERE `uuid` = ?";
 
-        try (var result = sql.query(qry);) {
+        try (var result = sql.query(
+                sql.prepareStatement(qry, SQLHandler.TABLE_PLAYERS_NAME, strUUID))) {
 
             if (!result.next()) {
                 return PlayerData.getDefault();
@@ -50,9 +51,11 @@ public class SQLRepository implements DataRepository {
     @Override
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
 
-        String qry = String.format("SELECT `data` FROM `%s` WHERE `name` = '%s'", SQLHandler.TABLE_GROUPS_NAME, groupName);
+        String qry = "SELECT `data` FROM `?` WHERE `name` = ?";
 
-        try (var result = sql.query(qry)) {
+        try (var result = sql.query(
+                sql.prepareStatement(qry, SQLHandler.TABLE_GROUPS_NAME, groupName))) {
+
             if (!result.next()) {
                 return null;
             }
@@ -76,15 +79,22 @@ public class SQLRepository implements DataRepository {
     @Override
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
 
-        String qry = String.format(
+        String qry =
             """
-            INSERT INTO `%s` (`uuid`, `data`) VALUES ('%s', '%s') as `new`
+            INSERT INTO ? (`uuid`, `data`) VALUES (?, ?) as `new`
             ON DUPLICATE KEY UPDATE `data` = `new`.`data`, `updated_at` = CURRENT_TIMESTAMP
-            """,
-            SQLHandler.TABLE_PLAYERS_NAME, uuidString, gson.toJson(playerData));
+            """;
 
         try {
-            sql.update(qry);
+            var statement = sql.prepareStatement(
+                qry,
+                SQLHandler.TABLE_PLAYERS_NAME,
+                uuidString,
+                gson.toJson(playerData)
+            );
+
+
+            sql.update(statement);
 
             //Sync success
             if (callback != null)
@@ -102,15 +112,21 @@ public class SQLRepository implements DataRepository {
     @Override
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
 
-        String qry = String.format(
+        String qry =
             """
-            INSERT INTO `%s` (`name`, `data`) VALUES ('%s', '%s') AS `new`
+            INSERT INTO ? (`name`, `data`) VALUES (?, ?) AS `new`
             ON DUPLICATE KEY UPDATE `data` = `new`.`data`, `updated_at` = CURRENT_TIMESTAMP
-            """,
-            SQLHandler.TABLE_GROUPS_NAME, groupName, gson.toJson(groupData));
+            """;
 
         try {
-            sql.update(qry);
+            var statement = sql.prepareStatement(
+                qry,
+                SQLHandler.TABLE_GROUPS_NAME,
+                groupName,
+                gson.toJson(groupData)
+            );
+
+            sql.update(statement);
 
             //Sync success
             if (callback != null)
@@ -123,12 +139,15 @@ public class SQLRepository implements DataRepository {
                 e.printStackTrace();
         }
     }
-
     @Override
     public boolean groupExists(String name) {
 
-        String qry = String.format("SELECT * FROM `%s` WHERE name='%s'", SQLHandler.TABLE_GROUPS_NAME, name);
-        try (ResultSet result = sql.query(qry)) {
+        String qry = "SELECT * FROM `?` WHERE name=?";
+
+
+        try (ResultSet result = sql.query(
+                sql.prepareStatement(qry, SQLHandler.TABLE_GROUPS_NAME, name))) {
+
             return result.next();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -42,27 +42,24 @@ public class SQLHandler {
         }
     }
 
-    public void update(String qry) throws SQLException {
-        Statement st = connection.createStatement();
-        st.executeUpdate(qry);
-        st.close();
+    public void update(PreparedStatement statement) throws SQLException {
+        statement.executeUpdate();
+        statement.close();
     }
 
-    public void execute(String cmd) throws SQLException {
+    public ResultSet query(PreparedStatement statement) throws SQLException {
+        ResultSet rs;
+        rs = statement.executeQuery();
+
+        statement.closeOnCompletion();
+
+        return rs;
+    }
+
+    private void executeRawStatement(String cmd) throws SQLException {
         Statement st = connection.createStatement();
         st.execute(cmd);
         st.close();
-    }
-
-    public ResultSet query(String qry) throws SQLException {
-        ResultSet rs;
-
-        Statement st = connection.createStatement();
-        rs = st.executeQuery(qry);
-
-        st.closeOnCompletion();
-
-        return rs;
     }
 
     private void initTables() {
@@ -98,11 +95,26 @@ public class SQLHandler {
         );
 
        try {
-           execute(cmdPlayers);
-           execute(cmdGroups);
+           executeRawStatement(cmdPlayers);
+           executeRawStatement(cmdGroups);
        } catch (SQLException e) {
            e.printStackTrace();
        }
+    }
+
+    public PreparedStatement prepareStatement(String qry) throws SQLException {
+        return connection.prepareStatement(qry);
+    }
+
+    public PreparedStatement prepareStatement(String qry, String... parameters) throws SQLException {
+        var statement = prepareStatement(qry);
+
+        for (int i = 1; i<=parameters.length; i++) {
+            String s = parameters[i];
+            statement.setString(i, s);
+        }
+
+        return statement;
     }
 
 }
