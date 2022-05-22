@@ -77,7 +77,10 @@ public class SQLRepository implements DataRepository {
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
 
         String qry = String.format(
-            "INSERT INTO `%s` (`uuid`, `data`) VALUES ('%s', '%s') ON DUPLICATE KEY UPDATE `data` = VALUE(`data`)",
+            """
+            INSERT INTO `%s` (`uuid`, `data`) VALUES ('%s', '%s') as `new`
+            ON DUPLICATE KEY UPDATE `data` = `new`.`data`, `updated_at` = CURRENT_TIMESTAMP
+            """,
             SQLHandler.TABLE_PLAYERS_NAME, uuidString, gson.toJson(playerData));
 
         try {
@@ -100,7 +103,10 @@ public class SQLRepository implements DataRepository {
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
 
         String qry = String.format(
-            "INSERT INTO `%s` (`name`, `data`) VALUES ('%s', '%s') ON DUPLICATE KEY UPDATE `data` = VALUE(`data`)",
+            """
+            INSERT INTO `%s` (`name`, `data`) VALUES ('%s', '%s') AS `new`
+            ON DUPLICATE KEY UPDATE `data` = `new`.`data`, `updated_at` = CURRENT_TIMESTAMP
+            """,
             SQLHandler.TABLE_GROUPS_NAME, groupName, gson.toJson(groupData));
 
         try {
