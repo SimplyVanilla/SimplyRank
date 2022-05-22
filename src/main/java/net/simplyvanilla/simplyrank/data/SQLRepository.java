@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 import org.bukkit.Bukkit;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
