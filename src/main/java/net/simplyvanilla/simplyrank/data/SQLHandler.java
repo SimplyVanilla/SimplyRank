@@ -111,7 +111,7 @@ public class SQLHandler {
 
         for (int i = 0; i < parameters.length; i++) {
             String s = parameters[i];
-            statement.setString(i, s);
+            statement.setString(i + 1, s);
         }
 
         return statement;
