@@ -20,12 +20,12 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "zvwild";
+        return "Simply Vanilla";
     }
 
     @Override
     public @NotNull String getVersion() {
-        return "0.2.4";
+        return "0.3.0";
     }
 
     @Override

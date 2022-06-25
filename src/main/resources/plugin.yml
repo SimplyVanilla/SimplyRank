@@ -3,6 +3,9 @@ name: SimplyRank
 version: @version@
 api-version: 1.19
 
+author: Simply Vanilla
+website: https://github.com/SimplyVanilla/SimplyRank
+
 depend:
   - PlaceholderAPI
 
