@@ -9,6 +9,7 @@ import net.simplyvanilla.simplyrank.data.GroupData;
 import net.simplyvanilla.simplyrank.data.IOCallback;
 import net.simplyvanilla.simplyrank.data.SQLHandler;
 import net.simplyvanilla.simplyrank.gson.ChatColorGsonDeserializer;
+import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -111,6 +112,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         getCommand("simplyrank").setExecutor(new SimplyRankCommandExecutor(dataManager));
 
         new SimplyRankPlaceholderExpansion().register();
+        new ScoreboardTeamsPlaceholderExtension().register();
     }
 
     @Override
