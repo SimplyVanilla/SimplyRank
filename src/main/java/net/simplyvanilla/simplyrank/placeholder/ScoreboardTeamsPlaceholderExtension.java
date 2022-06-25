@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -41,7 +42,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
         if (offPlayer instanceof Player player) {
             return switch (params) {
                 case "team_name" -> getTeamValue(player, Team::getName, "");
-                case "team_color" -> getTeamValue(player, Team::color, NamedTextColor.WHITE).toString();
+                case "team_color" -> getTeamValue(player, Team::getColor, ChatColor.WHITE).toString();
                 case "team_prefix" -> LegacyComponentSerializer.legacySection()
                     .serialize(getTeamValue(player, Team::prefix, Component.text("")));
                 case "team_suffix" -> LegacyComponentSerializer.legacySection()
