@@ -18,7 +18,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "simplyrank_scoreboard";
+        return "simplyscoreboard";
     }
 
     @Override
