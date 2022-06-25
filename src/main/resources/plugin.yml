@@ -1,7 +1,7 @@
 main: net.simplyvanilla.simplyrank.SimplyRankPlugin
 name: SimplyRank
 version: @version@
-api-version: 1.18
+api-version: 1.19
 
 depend:
   - PlaceholderAPI
