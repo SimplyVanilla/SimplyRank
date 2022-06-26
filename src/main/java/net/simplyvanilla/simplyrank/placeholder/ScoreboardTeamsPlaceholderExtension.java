@@ -29,7 +29,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "0.3.0";
+        return "0.3.1";
     }
 
     @Override
