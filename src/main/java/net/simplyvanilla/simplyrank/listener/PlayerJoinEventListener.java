@@ -36,6 +36,9 @@ public class PlayerJoinEventListener implements Listener {
                 String group = data.getPrimaryGroup();
                 groupPermissionManager.getPermissions(group).forEach((k, v) ->
                     playerPermissionManager.setPermission(player, k, v));
+
+                player.recalculatePermissions();
+                player.updateCommands();
             }
 
             @Override
