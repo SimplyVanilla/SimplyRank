@@ -4,22 +4,26 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.data.GroupData;
-import net.simplyvanilla.simplyrank.data.IOCallback;
-import net.simplyvanilla.simplyrank.data.SQLHandler;
+import net.simplyvanilla.simplyrank.data.*;
 import net.simplyvanilla.simplyrank.gson.ChatColorGsonDeserializer;
+import net.simplyvanilla.simplyrank.listener.PlayerJoinEventListener;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class SimplyRankPlugin extends JavaPlugin {
@@ -34,7 +38,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         instance = this;
 
         try {
-            config = loadConfig();
+            config = loadConfig("config.yml");
         } catch (IOException e) {
             e.printStackTrace();
             getLogger().log(Level.SEVERE, "Could not load config file! Disabling plugin...");
@@ -109,6 +113,30 @@ public class SimplyRankPlugin extends JavaPlugin {
             });
         }
 
+        try {
+            FileConfiguration permsFile = loadConfig("perms.yml");
+            PlayerPermissionManager playerPermissionManager = new PlayerPermissionManager(this);
+            GroupPermissionManager groupPermissionManager = new GroupPermissionManager();
+
+            Set<String> keys = permsFile.getKeys(false);
+
+            for (String key : keys) {
+                ConfigurationSection section = permsFile.getConfigurationSection(key);
+                Set<String> sectionKeys = section.getKeys(false);
+
+                for (String sectionKey : sectionKeys) {
+                    boolean value = section.getBoolean(sectionKey);
+                    groupPermissionManager.setPermission(key, sectionKey, value);
+                }
+            }
+
+            getServer().getPluginManager()
+                .registerEvents(new PlayerJoinEventListener(dataManager, playerPermissionManager, groupPermissionManager), this);
+        } catch (IOException e) {
+            getLogger().severe("Could not load perms.yml");
+            e.printStackTrace();
+        }
+
         getCommand("simplyrank").setExecutor(new SimplyRankCommandExecutor(dataManager));
 
         new SimplyRankPlaceholderExpansion().register();
@@ -130,17 +158,17 @@ public class SimplyRankPlugin extends JavaPlugin {
         return instance;
     }
 
-    private FileConfiguration loadConfig() throws IOException {
+    private FileConfiguration loadConfig(String name) throws IOException {
         File dataFolder = getDataFolder();
 
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
 
-        File configFile = new File(dataFolder, "config.yml");
+        File configFile = new File(dataFolder, name);
 
         if (!configFile.exists()) {
-            Files.copy(getClassLoader().getResourceAsStream("config.yml"), configFile.toPath());
+            Files.copy(getClassLoader().getResourceAsStream(name), configFile.toPath());
         }
 
         return YamlConfiguration.loadConfiguration(configFile);
