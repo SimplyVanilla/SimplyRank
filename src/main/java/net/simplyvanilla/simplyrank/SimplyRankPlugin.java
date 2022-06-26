@@ -122,12 +122,13 @@ public class SimplyRankPlugin extends JavaPlugin {
 
             for (String key : keys) {
                 ConfigurationSection section = permsFile.getConfigurationSection(key);
-                Set<String> sectionKeys = section.getKeys(false);
+                Map<String, Object> sectionKeys = section.getValues(true);
 
-                for (String sectionKey : sectionKeys) {
-                    boolean value = section.getBoolean(sectionKey);
-                    groupPermissionManager.setPermission(key, sectionKey, value);
-                }
+                sectionKeys.forEach((k, v) -> {
+                    if (v instanceof Boolean value) {
+                        groupPermissionManager.setPermission(key, k, value);
+                    }
+                });
             }
 
             getServer().getPluginManager()
