@@ -4,12 +4,15 @@ import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.GroupData;
 import net.simplyvanilla.simplyrank.data.IOCallback;
 import net.simplyvanilla.simplyrank.data.PlayerData;
+import net.simplyvanilla.simplyrank.utils.PermissionApplier;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
@@ -20,9 +23,11 @@ import java.util.stream.Collectors;
 public class SimplyRankCommandExecutor implements CommandExecutor {
 
     private final DataManager dataManager;
+    private final PermissionApplier permissionApplier;
 
-    public SimplyRankCommandExecutor(DataManager dataManager) {
+    public SimplyRankCommandExecutor(DataManager dataManager, PermissionApplier permissionApplier) {
         this.dataManager = dataManager;
+        this.permissionApplier = permissionApplier;
     }
 
 
@@ -240,6 +245,12 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
                             @Override
                             public void success(Void data) {
                                 sender.sendMessage("Group successfully removed!");
+
+                                Player player = Bukkit.getPlayer(uuid);
+
+                                if (player != null) {
+                                    permissionApplier.apply(player);
+                                }
                             }
 
                             @Override
@@ -283,6 +294,14 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             @Override
             public void success(Void data) {
                 sender.sendMessage("Successfully saved");
+
+                UUID uuid = UUID.fromString(uuidString);
+                Player player = Bukkit.getPlayer(uuid);
+
+                if (player != null) {
+                    permissionApplier.apply(player);
+                }
+
             }
 
             @Override
@@ -306,6 +325,13 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
             @Override
             public void success(Void data) {
                 sender.sendMessage("Sucessfully saved");
+
+                UUID uuid = UUID.fromString(uuidString);
+                Player player = Bukkit.getPlayer(uuid);
+
+                if (player != null) {
+                    permissionApplier.apply(player);
+                }
             }
 
             @Override

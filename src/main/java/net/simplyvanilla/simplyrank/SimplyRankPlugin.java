@@ -10,6 +10,7 @@ import net.simplyvanilla.simplyrank.listener.PlayerJoinEventListener;
 import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
+import net.simplyvanilla.simplyrank.utils.PermissionApplier;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;
@@ -118,6 +119,11 @@ public class SimplyRankPlugin extends JavaPlugin {
             FileConfiguration permsFile = loadConfig("perms.yml");
             PlayerPermissionManager playerPermissionManager = new PlayerPermissionManager(this);
             GroupPermissionManager groupPermissionManager = new GroupPermissionManager();
+            PermissionApplier permissionApplier = new PermissionApplier(
+                dataManager,
+                playerPermissionManager,
+                groupPermissionManager
+            );
 
             Set<String> keys = permsFile.getKeys(false);
 
@@ -133,15 +139,15 @@ public class SimplyRankPlugin extends JavaPlugin {
             }
 
             getServer().getPluginManager()
-                .registerEvents(new PlayerJoinEventListener(dataManager, playerPermissionManager, groupPermissionManager), this);
+                .registerEvents(new PlayerJoinEventListener(permissionApplier), this);
             getServer().getPluginManager()
                 .registerEvents(new PlayerQuitEventListener(playerPermissionManager), this);
+
+            getCommand("simplyrank").setExecutor(new SimplyRankCommandExecutor(dataManager, permissionApplier));
         } catch (IOException e) {
             getLogger().severe("Could not load perms.yml");
             e.printStackTrace();
         }
-
-        getCommand("simplyrank").setExecutor(new SimplyRankCommandExecutor(dataManager));
 
         new SimplyRankPlaceholderExpansion().register();
         new ScoreboardTeamsPlaceholderExtension().register();
