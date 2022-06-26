@@ -7,6 +7,7 @@ import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
 import net.simplyvanilla.simplyrank.data.*;
 import net.simplyvanilla.simplyrank.gson.ChatColorGsonDeserializer;
 import net.simplyvanilla.simplyrank.listener.PlayerJoinEventListener;
+import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import org.bukkit.ChatColor;
@@ -133,6 +134,8 @@ public class SimplyRankPlugin extends JavaPlugin {
 
             getServer().getPluginManager()
                 .registerEvents(new PlayerJoinEventListener(dataManager, playerPermissionManager, groupPermissionManager), this);
+            getServer().getPluginManager()
+                .registerEvents(new PlayerQuitEventListener(playerPermissionManager), this);
         } catch (IOException e) {
             getLogger().severe("Could not load perms.yml");
             e.printStackTrace();
