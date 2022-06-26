@@ -40,7 +40,7 @@ public class PlayerJoinEventListener implements Listener {
 
             @Override
             public void error(Exception error) {
-                error.printStackTrace();
+                // No important erros here
             }
         });
     }
