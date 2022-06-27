@@ -56,7 +56,7 @@ public class DiskDataRepository implements DataRepository{
     @Override
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
         try {
-            Files.writeString(getPlayerDataFile(uuidString), gson.toJson(playerData), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+            Files.writeString(getPlayerDataFile(uuidString), gson.toJson(playerData), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
             if (callback != null)
                 Bukkit.getScheduler().runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
@@ -72,7 +72,7 @@ public class DiskDataRepository implements DataRepository{
     @Override
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
         try {
-            Files.writeString(getGroupFile(groupName), gson.toJson(groupData), StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+            Files.writeString(getGroupFile(groupName), gson.toJson(groupData), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             // Switch back to sync
             if (callback != null)
                 Bukkit.getScheduler().runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
