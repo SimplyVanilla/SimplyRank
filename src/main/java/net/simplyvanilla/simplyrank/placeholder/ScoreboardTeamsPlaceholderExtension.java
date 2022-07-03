@@ -2,7 +2,6 @@ package net.simplyvanilla.simplyrank.placeholder;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +15,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
+
+    private final String teamNameDecoratedFormat;
+
+    public ScoreboardTeamsPlaceholderExtension(String teamNameDecoratedFormat) {
+        this.teamNameDecoratedFormat = teamNameDecoratedFormat;
+    }
 
     @Override
     public @NotNull String getIdentifier() {
@@ -42,6 +47,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
         if (offPlayer instanceof Player player) {
             return switch (params) {
                 case "team_name" -> getTeamValue(player, Team::getName, "");
+                case "team_name_decorated" -> getTeamValue(player, t -> String.format(teamNameDecoratedFormat, t.getName()), "");
                 case "team_color" -> getTeamValue(player, Team::getColor, ChatColor.WHITE).toString();
                 case "team_prefix" -> LegacyComponentSerializer.legacySection()
                     .serialize(getTeamValue(player, Team::prefix, Component.text("")));

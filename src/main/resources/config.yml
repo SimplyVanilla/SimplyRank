@@ -6,3 +6,5 @@ mysql:
   url: 'jdbc:mysql://127.0.0.1:3306/simplyrank?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false'
   username: 'user'
   password: '1234'
+
+team_name_decorated: "[%s]"
