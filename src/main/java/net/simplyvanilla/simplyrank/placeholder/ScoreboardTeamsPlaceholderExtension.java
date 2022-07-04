@@ -1,5 +1,6 @@
 package net.simplyvanilla.simplyrank.placeholder;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -47,7 +48,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
         if (offPlayer instanceof Player player) {
             return switch (params) {
                 case "team_name" -> getTeamValue(player, Team::getName, "");
-                case "team_name_decorated" -> getTeamValue(player, t -> String.format(teamNameDecoratedFormat, t.getName()), "");
+                case "team_name_decorated" -> getTeamValue(player, t -> String.format(PlaceholderAPI.setPlaceholders(player, teamNameDecoratedFormat), t.getName()), "");
                 case "team_color" -> getTeamValue(player, Team::getColor, ChatColor.WHITE).toString();
                 case "team_prefix" -> LegacyComponentSerializer.legacySection()
                     .serialize(getTeamValue(player, Team::prefix, Component.text("")));
