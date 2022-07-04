@@ -1,5 +1,4 @@
 # Config for SimplyRank
-# Currently only for MySQL connections
 
 mysql:
   active: false
