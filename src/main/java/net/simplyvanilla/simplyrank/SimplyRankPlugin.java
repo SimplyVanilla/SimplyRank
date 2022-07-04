@@ -150,7 +150,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         }
 
         new SimplyRankPlaceholderExpansion().register();
-        new ScoreboardTeamsPlaceholderExtension(config.getString("team_name_decorated")).register();
+        new ScoreboardTeamsPlaceholderExtension(config.getString("team_name_decorated", "")).register();
     }
 
     @Override
