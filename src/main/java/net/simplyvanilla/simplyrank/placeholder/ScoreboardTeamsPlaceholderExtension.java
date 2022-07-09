@@ -1,6 +1,5 @@
 package net.simplyvanilla.simplyrank.placeholder;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -17,12 +16,6 @@ import java.util.function.Function;
 
 public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
 
-    private final String teamNameDecoratedFormat;
-
-    public ScoreboardTeamsPlaceholderExtension(String teamNameDecoratedFormat) {
-        this.teamNameDecoratedFormat = teamNameDecoratedFormat;
-    }
-
     @Override
     public @NotNull String getIdentifier() {
         return "simplyscoreboard";
@@ -35,7 +28,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "0.3.1";
+        return "0.4.0";
     }
 
     @Override
@@ -48,8 +41,7 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
         if (offPlayer instanceof Player player) {
             return switch (params) {
                 case "team_name" -> getTeamValue(player, Team::getName, "");
-                case "team_name_decorated" -> getTeamValue(player, t -> String.format(PlaceholderAPI.setPlaceholders(player, teamNameDecoratedFormat), t.getName()), "");
-                case "team_color" -> getTeamValue(player, Team::getColor, ChatColor.WHITE).toString();
+                case "team_color" -> getTeamValue(player, Team::color, ChatColor.WHITE).toString();
                 case "team_prefix" -> LegacyComponentSerializer.legacySection()
                     .serialize(getTeamValue(player, Team::prefix, Component.text("")));
                 case "team_suffix" -> LegacyComponentSerializer.legacySection()
