@@ -25,7 +25,7 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "0.3.1";
+        return "0.4.0";
     }
 
     @Override
