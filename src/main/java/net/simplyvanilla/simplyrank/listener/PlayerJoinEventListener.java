@@ -5,8 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.UUID;
-
 public class PlayerJoinEventListener implements Listener {
 
     private final PermissionApplier permissionApplier;

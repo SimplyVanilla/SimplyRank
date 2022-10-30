@@ -6,9 +6,20 @@ api-version: 1.19
 author: Simply Vanilla
 website: https://github.com/SimplyVanilla/SimplyRank
 
-depend:
-  - PlaceholderAPI
+depend: [PlaceholderAPI]
 
 commands:
   simplyrank:
     description: Rank management command
+    usage: |
+      /simplyrank create RANK COLOR [PREFIX] - Creates a new rank.
+      /simplyrank set PLAYER RANK - Sets the primary rank of a player.
+      /simplyrank add PLAYER RANK - Add rank to a player.
+      /simplyrank get PLAYER - Get all ranks of a player.
+      /simplyrank rem PLAYER RANK - Remove rank from a player.
+    permission: simplyrank.manage
+
+permissions:
+  simplyrank.manage:
+    description: whether the player can change other player's rank
+    default: op

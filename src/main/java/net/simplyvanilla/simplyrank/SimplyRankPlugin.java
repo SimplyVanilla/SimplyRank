@@ -48,13 +48,13 @@ public class SimplyRankPlugin extends JavaPlugin {
             return;
         }
 
-        boolean useSql = config.getBoolean("mysql.active");
+        boolean useSql = config.getBoolean("database.active");
 
         if (useSql) {
             try {
                 sqlHandler = createSQLHandlerFromConfig(config);
             } catch (NullPointerException e) {
-                getLogger().log(Level.SEVERE, "Could not establish connection to mysql database. Presumably, there are credentials missing!");
+                getLogger().log(Level.SEVERE, "Could not establish connection to database. Presumably, there are credentials missing!");
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             }
@@ -187,9 +187,9 @@ public class SimplyRankPlugin extends JavaPlugin {
     private SQLHandler createSQLHandlerFromConfig(FileConfiguration config) {
 
         try {
-            String url = config.getString("mysql.url");
-            String password = config.getString("mysql.password");
-            String user = config.getString("mysql.username");
+            String url = config.getString("database.url");
+            String password = config.getString("database.password");
+            String user = config.getString("database.username");
 
             return new SQLHandler(url, user, password);
 

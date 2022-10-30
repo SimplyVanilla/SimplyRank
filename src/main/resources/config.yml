@@ -1,7 +1,7 @@
 # Config for SimplyRank
 
-mysql:
+database:
   active: false
-  url: 'jdbc:mysql://127.0.0.1:3306/simplyrank?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false'
-  username: 'user'
-  password: '1234'
+  url: jdbc:mysql://127.0.0.1:3306/simplyrank?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
+  username: user123
+  password: pass123
