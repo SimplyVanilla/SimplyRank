@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
-public class DiskDataRepository implements DataRepository{
+public class DiskDataRepository implements DataRepository {
 
     private final Gson gson;
     private final Path groupFolder;

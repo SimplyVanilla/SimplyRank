@@ -25,7 +25,7 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return "0.4.0";
+        return "0.5.0";
     }
 
     @Override
@@ -41,34 +41,39 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
     @Override
     public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
         // Can't use async in placeholder api
-        if (params.equals("name_color")) {
-            try {
-                return plugin.getDataManager().loadGroupDataSync(
-                                plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
+        switch (params) {
+            case "name_color":
+                try {
+                    return plugin.getDataManager().loadGroupDataSync(
+                            plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
                         .getColor().name();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (params.equals("code_color")) {
-            try {
-                return "§" + plugin.getDataManager().loadGroupDataSync(
-                                plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "code_color":
+                try {
+                    return "§" + plugin.getDataManager().loadGroupDataSync(
+                            plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
                         .getColor().getChar();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (params.equals("prefix")) {
-            try {
-                return plugin.getDataManager().loadGroupDataSync(
-                                plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "prefix":
+                try {
+                    return plugin.getDataManager().loadGroupDataSync(
+                            plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
                         .getPrefix();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (params.equals("primary_rank")) {
-            return plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "primary_rank":
+                return plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup();
 
         }
+
         return null;
     }
 

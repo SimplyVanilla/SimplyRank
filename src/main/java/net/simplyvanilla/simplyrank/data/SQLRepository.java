@@ -23,7 +23,7 @@ public class SQLRepository implements DataRepository {
 
         var strUUID = uuid.toString();
 
-        String qry = String.format("SELECT `data` FROM `%s` WHERE `uuid` = ?", SQLHandler.TABLE_PLAYERS_NAME);
+        String qry = String.format("SELECT `data` FROM `%s` WHERE `id` = UUID_TO_BIN(?)", SQLHandler.TABLE_PLAYERS_NAME);
 
         try (var result = sql.query(sql.prepareStatement(qry, strUUID))) {
 
@@ -34,8 +34,7 @@ public class SQLRepository implements DataRepository {
             String jsonString = result.getString("data");
             if (jsonString == null) return PlayerData.getDefault();
 
-            var playerData = gson.fromJson(jsonString, PlayerData.class);
-            return playerData;
+            return gson.fromJson(jsonString, PlayerData.class);
 
         } catch (SQLException e) {
             if (callback != null)
@@ -60,8 +59,7 @@ public class SQLRepository implements DataRepository {
             String jsonString = result.getString("data");
             if (jsonString == null) return null;
 
-            var groupData = gson.fromJson(jsonString, GroupData.class);
-            return groupData;
+            return gson.fromJson(jsonString, GroupData.class);
         } catch (SQLException e) {
             if (callback != null)
                 callback.error(e);
@@ -76,62 +74,26 @@ public class SQLRepository implements DataRepository {
     @Override
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
 
-        String qry = String.format("""
-            INSERT INTO `%s` (`uuid`, `data`) VALUES (?, ?) as `new`
-            ON DUPLICATE KEY UPDATE `data` = `new`.`data`, `updated_at` = CURRENT_TIMESTAMP
+        String query = String.format("""
+            INSERT INTO `%s` (`id`, `data`) VALUES (UUID_TO_BIN(?), ?)
+            ON DUPLICATE KEY UPDATE `data` = VALUES(`data`), `updated_at` = CURRENT_TIMESTAMP
             """, SQLHandler.TABLE_PLAYERS_NAME);
 
-        try {
-            var statement = sql.prepareStatement(
-                qry,
-                uuidString,
-                gson.toJson(playerData)
-            );
-
-
-            sql.update(statement);
-
-            //Sync success
-            if (callback != null)
-                Bukkit.getScheduler().runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
-
-        } catch (SQLException e) {
-            if (callback != null)
-                callback.error(e);
-            else
-                e.printStackTrace();
-        }
+        updateData(query, callback, uuidString, gson.toJson(playerData));
 
     }
 
     @Override
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
 
-        String qry = String.format("""
-            INSERT INTO `%s` (`name`, `data`) VALUES (?, ?) AS `new`
-            ON DUPLICATE KEY UPDATE `data` = `new`.`data`, `updated_at` = CURRENT_TIMESTAMP
+        String query = String.format("""
+            INSERT INTO `%s` (`name`, `data`) VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE `data` = VALUES(`data`), `updated_at` = CURRENT_TIMESTAMP
             """, SQLHandler.TABLE_GROUPS_NAME);
 
-        try {
-            var statement = sql.prepareStatement(
-                qry,
-                groupName,
-                gson.toJson(groupData)
-            );
-
-            sql.update(statement);
-
-            //Sync success
-            if (callback != null)
-                Bukkit.getScheduler().runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
-
-        } catch (SQLException e) {
-            if (callback != null)
-                callback.error(e);
-            else
-                e.printStackTrace();
-        }
+        updateData(query, callback, groupName, gson.toJson(groupData));
     }
+
     @Override
     public boolean groupExists(String name) {
 
@@ -146,4 +108,21 @@ public class SQLRepository implements DataRepository {
         return false;
     }
 
+    private void updateData(String query, IOCallback<Void, Exception> callback, String key, String data) {
+        try {
+            var statement = sql.prepareStatement(query, key, data);
+
+            sql.update(statement);
+
+            //Sync success
+            if (callback != null)
+                Bukkit.getScheduler().runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
+
+        } catch (SQLException e) {
+            if (callback != null)
+                callback.error(e);
+            else
+                e.printStackTrace();
+        }
+    }
 }

@@ -4,8 +4,8 @@ import java.sql.*;
 
 public class SQLHandler {
 
-    public static final String TABLE_PLAYERS_NAME = "players";
-    public static final String TABLE_GROUPS_NAME = "groups";
+    public static final String TABLE_PLAYERS_NAME = "player";
+    public static final String TABLE_GROUPS_NAME = "group";
 
     private final String URL;
     private final String USERNAME;
@@ -67,13 +67,11 @@ public class SQLHandler {
        String cmdPlayers = String.format(
            """
              CREATE TABLE if not exists `%s` (
-                `id` int unsigned NOT NULL AUTO_INCREMENT,
-                `uuid` char(36) NOT NULL,
+                `id` BINARY(16) NOT NULL,
                 `data` text NOT NULL,
                 `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `uuid` (`uuid`)
+                PRIMARY KEY (`id`)
               )
            """,
            TABLE_PLAYERS_NAME
