@@ -1,15 +1,18 @@
 package net.simplyvanilla.simplyrank.data;
 
 import com.google.gson.Gson;
-import net.simplyvanilla.simplyrank.SimplyRankPlugin;
-import org.bukkit.Bukkit;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+import org.bukkit.Bukkit;
 
-public class SQLRepository implements DataRepository {
+public class SQLRepository {
+    /*
 
+        All methods are synchronous, unless specified
+
+    */
     private final SQLHandler sql;
     private final Gson gson;
 
@@ -18,7 +21,6 @@ public class SQLRepository implements DataRepository {
         this.gson = gson;
     }
 
-    @Override
     public PlayerData loadPlayerData(UUID uuid, IOCallback<PlayerData, Exception> callback) {
 
         var strUUID = uuid.toString();
@@ -46,7 +48,6 @@ public class SQLRepository implements DataRepository {
         return null;
     }
 
-    @Override
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
 
         String qry = String.format("SELECT `data` FROM `%s` WHERE `name` = ?", SQLHandler.TABLE_GROUPS_NAME);
@@ -71,7 +72,6 @@ public class SQLRepository implements DataRepository {
         return null;
     }
 
-    @Override
     public void savePlayerData(String uuidString, PlayerData playerData, IOCallback<Void, Exception> callback) {
 
         String query = String.format("""
@@ -83,7 +83,6 @@ public class SQLRepository implements DataRepository {
 
     }
 
-    @Override
     public void saveGroupData(String groupName, GroupData groupData, IOCallback<Void, Exception> callback) {
 
         String query = String.format("""
@@ -94,7 +93,6 @@ public class SQLRepository implements DataRepository {
         updateData(query, callback, groupName, gson.toJson(groupData));
     }
 
-    @Override
     public boolean groupExists(String name) {
 
         String qry = String.format("SELECT * FROM `%s` WHERE `name` = ?", SQLHandler.TABLE_GROUPS_NAME);
@@ -125,4 +123,5 @@ public class SQLRepository implements DataRepository {
                 e.printStackTrace();
         }
     }
+
 }
