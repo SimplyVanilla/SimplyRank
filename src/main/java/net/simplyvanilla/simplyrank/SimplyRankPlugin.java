@@ -3,27 +3,26 @@ package net.simplyvanilla.simplyrank;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
 import net.simplyvanilla.simplyrank.data.*;
-import net.simplyvanilla.simplyrank.gson.ChatColorGsonDeserializer;
+import net.simplyvanilla.simplyrank.gson.TextColorGsonDeserializer;
 import net.simplyvanilla.simplyrank.listener.PlayerJoinEventListener;
 import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
+import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import net.simplyvanilla.simplyrank.utils.PermissionApplier;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -60,7 +59,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
-                .registerTypeAdapter(new TypeToken<ChatColor>(){}.getType(), new ChatColorGsonDeserializer())
+                .registerTypeAdapter(new TypeToken<TextColor>(){}.getType(), new TextColorGsonDeserializer())
                 .create();
 
         File dataFolder = getDataFolder();
@@ -76,7 +75,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
 
         if (!dataManager.groupExists("default")) {
-            GroupData defaultData = new GroupData(ChatColor.GRAY, "Member ");
+            GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
             dataManager.saveGroupDataAsync("default", defaultData, new IOCallback<>() {
                 @Override
                 public void success(Void data) {
@@ -126,6 +125,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         new SimplyRankPlaceholderExpansion().register();
         new ScoreboardTeamsPlaceholderExtension().register();
+        new MiniPlaceholderRegister(this).register();
     }
 
     @Override

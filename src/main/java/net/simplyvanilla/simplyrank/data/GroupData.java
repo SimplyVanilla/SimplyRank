@@ -1,25 +1,27 @@
 package net.simplyvanilla.simplyrank.data;
 
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 
 public class GroupData {
 
-    private ChatColor color;
+    private TextColor color;
     private String prefix;
 
     public GroupData() {
     }
 
-    public GroupData(ChatColor color, String prefix) {
+    public GroupData(TextColor color, String prefix) {
         this.color = color;
         this.prefix = prefix;
     }
 
-    public ChatColor getColor() {
+    public TextColor getColor() {
         return color;
     }
 
-    public void setColor(ChatColor color) {
+    public void setColor(TextColor color) {
         this.color = color;
     }
 

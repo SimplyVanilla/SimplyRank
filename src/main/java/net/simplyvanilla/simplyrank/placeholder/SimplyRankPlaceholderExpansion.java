@@ -1,6 +1,10 @@
 package net.simplyvanilla.simplyrank.placeholder;
 
+import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
+
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -35,7 +39,8 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public boolean canRegister() {
-        return (plugin = (SimplyRankPlugin) Bukkit.getPluginManager().getPlugin(getRequiredPlugin())) != null;
+        return (plugin =
+            (SimplyRankPlugin) Bukkit.getPluginManager().getPlugin(getRequiredPlugin())) != null;
     }
 
     @Override
@@ -44,29 +49,34 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
         if (params.equals("name_color")) {
             try {
                 return plugin.getDataManager().loadGroupDataSync(
-                        plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
-                    .getColor().name();
+                        plugin.getDataManager().loadPlayerDataSync(player.getUniqueId())
+                            .getPrimaryGroup())
+                    .getColor().asHexString();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (params.equals("code_color")) {
             try {
-                return "§" + plugin.getDataManager().loadGroupDataSync(
-                        plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
-                    .getColor().getChar();
+                return ChatColor.of(plugin.getDataManager().loadGroupDataSync(
+                        plugin.getDataManager().loadPlayerDataSync(player.getUniqueId())
+                            .getPrimaryGroup())
+                    .getColor().asHexString()).toString();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (params.equals("prefix")) {
             try {
-                return plugin.getDataManager().loadGroupDataSync(
-                        plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
-                    .getPrefix();
+                return LegacyComponentSerializer.legacySection()
+                    .serialize(miniMessage().deserialize(plugin.getDataManager().loadGroupDataSync(
+                            plugin.getDataManager().loadPlayerDataSync(player.getUniqueId())
+                                .getPrimaryGroup())
+                        .getPrefix()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (params.equals("primary_rank")) {
-            return plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup();
+            return plugin.getDataManager().loadPlayerDataSync(player.getUniqueId())
+                .getPrimaryGroup();
 
         }
         return null;
