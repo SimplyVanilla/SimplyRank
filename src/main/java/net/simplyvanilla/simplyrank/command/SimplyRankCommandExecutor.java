@@ -1,5 +1,7 @@
 package net.simplyvanilla.simplyrank.command;
 
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.GroupData;
 import net.simplyvanilla.simplyrank.data.IOCallback;
@@ -59,7 +61,8 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
 
                 String name = args[1];
                 try {
-                    ChatColor color = ChatColor.valueOf(args[2].toUpperCase(Locale.ROOT));
+                    TextColor color = NamedTextColor.NAMES.value(args[2].toUpperCase(Locale.ROOT));
+
 
                     if (dataManager.groupExists(name)) {
                         sender.sendMessage("That group does already exist.");
