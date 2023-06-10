@@ -67,7 +67,7 @@ public class MiniPlaceholderRegister {
                         .getColor();
                     return Tag.styling(builder1 -> builder1.color(color));
                 } catch (IOException ignored) {
-                    ignored.printStackTrace();
+                    plugin.getLogger().warning("Failed to load group data for player " + player.getName());
                 }
                 return TagsUtils.EMPTY_TAG;
             })
@@ -80,7 +80,7 @@ public class MiniPlaceholderRegister {
                                     .getPrimaryGroup())
                             .getPrefix()));
                 } catch (IOException ignored) {
-                    ignored.printStackTrace();
+                    plugin.getLogger().severe("Failed to load group data for player " + ignored.getMessage());
                 }
                 return TagsUtils.EMPTY_TAG;
             })
