@@ -5,21 +5,16 @@ import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public final class DataManager {
 
-    private DataRepository repository;
+    private SQLRepository repository;
 
     private final Map<UUID, PlayerData> playerDataCache = new HashMap<>();
     private final Map<String, GroupData> groupDataCache = new HashMap<>();
-
-    public DataManager(Gson gson, Path groupFolder, Path playerDataFolder) {
-        repository = new DiskDataRepository(gson, groupFolder, playerDataFolder);
-    }
 
     public DataManager(Gson gson, SQLHandler sqlHandler) {
         repository = new SQLRepository(sqlHandler, gson);

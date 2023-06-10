@@ -48,17 +48,14 @@ public class SimplyRankPlugin extends JavaPlugin {
             return;
         }
 
-        boolean useSql = config.getBoolean("database.active");
-
-        if (useSql) {
-            try {
-                sqlHandler = createSQLHandlerFromConfig(config);
-            } catch (NullPointerException e) {
-                getLogger().log(Level.SEVERE, "Could not establish connection to database. Presumably, there are credentials missing!");
-                getServer().getPluginManager().disablePlugin(this);
-                return;
-            }
+        try {
+            sqlHandler = createSQLHandlerFromConfig(config);
+        } catch (NullPointerException e) {
+            getLogger().log(Level.SEVERE, "Could not establish connection to database. Presumably, there are credentials missing!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
+
 
 
         Gson gson = new GsonBuilder()
@@ -74,31 +71,9 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         Path dataFolderPath = dataFolder.toPath();
 
-        if (useSql) {
-            dataManager = new DataManager(gson, sqlHandler); //Using a data manager that uses an sql database.
-        }
-        else {
-            Path groupFolder = dataFolderPath.resolve("groups");
 
-            if (!Files.exists(groupFolder)) {
-                try {
-                    Files.createDirectories(groupFolder);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        dataManager = new DataManager(gson, sqlHandler); //Using a data manager that uses an sql database.
 
-            Path playerFolder = dataFolderPath.resolve("players");
-            if (!Files.exists(playerFolder)) {
-                try {
-                    Files.createDirectories(playerFolder);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            dataManager = new DataManager(gson, groupFolder, playerFolder); //Using a data manger that reads data from disk
-        }
 
         if (!dataManager.groupExists("default")) {
             GroupData defaultData = new GroupData(ChatColor.GRAY, "Member ");
