@@ -65,7 +65,7 @@ public class MiniPlaceholderRegister {
                             plugin.getDataManager().loadPlayerDataSync(player.getUniqueId())
                                 .getPrimaryGroup())
                         .getColor();
-                    return Tag.styling(builder1 -> builder1.color(color));
+                    return Tag.styling(style -> style.color(color));
                 } catch (IOException ignored) {
                     plugin.getLogger().warning("Failed to load group data for player " + player.getName());
                 }

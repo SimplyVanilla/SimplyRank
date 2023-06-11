@@ -2,16 +2,15 @@ package net.simplyvanilla.simplyrank.placeholder;
 
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
+import java.io.IOException;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.ChatColor;
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+import net.simplyvanilla.simplyrank.utils.HexColors;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
 
 public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
 
@@ -57,10 +56,10 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
             }
         } else if (params.equals("code_color")) {
             try {
-                return ChatColor.of(plugin.getDataManager().loadGroupDataSync(
+                return HexColors.message(plugin.getDataManager().loadGroupDataSync(
                         plugin.getDataManager().loadPlayerDataSync(player.getUniqueId())
                             .getPrimaryGroup())
-                    .getColor().asHexString()).toString();
+                    .getColor().asHexString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
