@@ -5,6 +5,7 @@ import static net.kyori.adventure.text.Component.text;
 import java.io.FileNotFoundException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -58,7 +59,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
       case "get" -> getCommandHandler(sender, label, args);
       case "rem" -> remCommandHandler(sender, label, args);
       default -> {
-        return true;
+        return false;
       }
     }
 
@@ -105,14 +106,9 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
     }
   }
 
-  private void setCommandHandler(CommandSender sender, String label, String[] args) {
+  private void fetchPlayerData(
+      CommandSender sender, String[] args, String group, Consumer<PlayerData> action) {
     String input = args[1];
-
-    if (args.length != 3) {
-      sender.sendMessage(text(errorMessages.setCommandFormatError(label)));
-      return;
-    }
-
     final UUID uuid = PlayerUtils.resolveUuid(input);
 
     if (uuid == null) {
@@ -120,26 +116,23 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
       return;
     }
 
-    String group = args[2];
-
     if (!dataManager.groupExists(group)) {
       sender.sendMessage(text("That group does not exist!"));
       return;
     }
 
-    String uuidString = uuid.toString();
     dataManager.loadPlayerDataAsync(
         uuid,
         new IOCallback<>() {
           @Override
           public void success(PlayerData data) {
-            coreSetCommandHandler(sender, group, uuidString, data);
+            action.accept(data);
           }
 
           @Override
           public void error(Exception error) {
             if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
-              coreSetCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
+              action.accept(new PlayerData(new ArrayList<>()));
               return;
             }
 
@@ -148,47 +141,24 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         });
   }
 
-  private void addCommandHandler(CommandSender sender, String label, String[] args) {
-    String input = args[1];
+  private void setCommandHandler(CommandSender sender, String label, String[] args) {
+    if (args.length != 3) {
+      sender.sendMessage(text(errorMessages.setCommandFormatError(label)));
+      return;
+    }
 
+    fetchPlayerData(
+        sender, args, args[2], data -> coreSetCommandHandler(sender, args[2], args[1], data));
+  }
+
+  private void addCommandHandler(CommandSender sender, String label, String[] args) {
     if (args.length != 3) {
       sender.sendMessage(text(errorMessages.addCommandFormatError(label)));
       return;
     }
 
-    final UUID uuid = PlayerUtils.resolveUuid(input);
-
-    if (uuid == null) {
-      sender.sendMessage(text(this.errorMessages.cannotFindPlayerError()));
-      return;
-    }
-
-    String group = args[2];
-
-    if (!dataManager.groupExists(group)) {
-      sender.sendMessage(text("That group does not exist!"));
-      return;
-    }
-
-    String uuidString = uuid.toString();
-    dataManager.loadPlayerDataAsync(
-        uuid,
-        new IOCallback<>() {
-          @Override
-          public void success(PlayerData data) {
-            coreAddCommandHandler(sender, group, uuidString, data);
-          }
-
-          @Override
-          public void error(Exception error) {
-            if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
-              coreAddCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
-              return;
-            }
-
-            error.printStackTrace();
-          }
-        });
+    fetchPlayerData(
+        sender, args, args[2], data -> coreAddCommandHandler(sender, args[2], args[1], data));
   }
 
   private void getCommandHandler(CommandSender sender, String label, String[] args) {
@@ -223,70 +193,55 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
   }
 
   private void remCommandHandler(CommandSender sender, String label, String[] args) {
-    String input = args[1];
 
     if (args.length != 3) {
       sender.sendMessage(text(errorMessages.remCommandFormatError(label)));
       return;
     }
 
-    final String group = args[2]; // Has to be final to be accessible in callback
-    final UUID uuid = PlayerUtils.resolveUuid(input);
+    final String group = args[2];
+    fetchPlayerData(
+        sender,
+        args,
+        group,
+        data -> {
+          List<String> groups = data.getGroups();
 
-    if (uuid == null) {
-      sender.sendMessage(text(this.errorMessages.cannotFindPlayerError()));
-      return;
-    }
-
-    // First, fetch the current data
-    dataManager.loadPlayerDataAsync(
-        uuid,
-        new IOCallback<>() {
-          @Override
-          public void success(PlayerData data) {
-            List<String> groups = data.getGroups();
-
-            if (!groups.contains(group)) {
-              sender.sendMessage(text("does not have group."));
-              return;
-            }
-
-            groups.remove(group);
-
-            if (groups.isEmpty()) {
-              groups.add("default");
-            }
-
-            data.setGroups(groups);
-
-            // Next, replace the old data with the new one. Both asynchronous to save
-            // performance
-            dataManager.savePlayerDataAsync(
-                uuid.toString(),
-                data,
-                new IOCallback<>() {
-                  @Override
-                  public void success(Void data) {
-                    sender.sendMessage(text("Group successfully removed!"));
-
-                    Player player = Bukkit.getPlayer(uuid);
-
-                    if (player != null) {
-                      permissionApplier.apply(player);
-                    }
-                  }
-
-                  @Override
-                  public void error(Exception error) {
-                    sender.sendMessage(text("Could not remove group!"));
-                  }
-                });
+          if (!groups.contains(group)) {
+            sender.sendMessage(text("does not have group."));
+            return;
           }
 
-          @Override
-          public void error(Exception error) {
-            sender.sendMessage(text("Player data not found."));
+          groups.remove(group);
+
+          if (groups.isEmpty()) {
+            groups.add("default");
           }
+
+          data.setGroups(groups);
+
+          // Next, replace the old data with the new one. Both asynchronous to save performance
+          dataManager.savePlayerDataAsync(
+              args[1],
+              data,
+              new IOCallback<>() {
+                @Override
+                public void success(Void data) {
+                  sender.sendMessage(text("Group successfully removed!"));
+
+                  UUID uuid = UUID.fromString(args[1]);
+                  Player player = Bukkit.getPlayer(uuid);
+
+                  if (player != null) {
+                    permissionApplier.apply(player);
+                  }
+                }
+
+                @Override
+                public void error(Exception error) {
+                  sender.sendMessage(text("Could not remove group!"));
+                }
+              });
         });
   }
 
