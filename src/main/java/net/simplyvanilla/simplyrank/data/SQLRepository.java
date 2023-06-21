@@ -25,7 +25,9 @@ public class SQLRepository {
 
         var strUUID = uuid.toString();
 
-        String qry = String.format("SELECT `data` FROM `%s` WHERE `id` = UUID_TO_BIN(?)", SQLHandler.TABLE_PLAYERS_NAME);
+    String qry =
+        String.format(
+            "SELECT `data` FROM `%s` WHERE `id` = UUID_TO_BIN(?)", SQLHandler.TABLE_PLAYERS_NAME);
 
         try (var result = sql.query(sql.prepareStatement(qry, strUUID))) {
 

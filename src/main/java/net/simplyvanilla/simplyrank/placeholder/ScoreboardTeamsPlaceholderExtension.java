@@ -39,15 +39,15 @@ public class ScoreboardTeamsPlaceholderExtension extends PlaceholderExpansion {
     @Override
     public @Nullable String onRequest(OfflinePlayer offPlayer, @NotNull String params) {
         if (offPlayer instanceof Player player) {
-            return switch (params) {
-                case "team_name" -> getTeamValue(player, Team::getName, "");
-                case "team_color" -> getTeamValue(player, Team::getColor, ChatColor.WHITE).toString();
-                case "team_prefix" -> LegacyComponentSerializer.legacySection()
-                    .serialize(getTeamValue(player, Team::prefix, Component.text("")));
-                case "team_suffix" -> LegacyComponentSerializer.legacySection()
-                    .serialize(getTeamValue(player, Team::suffix, Component.text("")));
-                default -> null;
-            };
+      return switch (params) {
+        case "team_name" -> getTeamValue(player, Team::getName, "");
+        case "team_color" -> getTeamValue(player, Team::getColor, ChatColor.WHITE).toString();
+        case "team_prefix" -> LegacyComponentSerializer.legacySection()
+            .serialize(getTeamValue(player, Team::prefix, Component.text("")));
+        case "team_suffix" -> LegacyComponentSerializer.legacySection()
+            .serialize(getTeamValue(player, Team::suffix, Component.text("")));
+        default -> null;
+      };
         } else {
             return null;
         }

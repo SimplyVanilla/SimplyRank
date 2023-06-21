@@ -4,68 +4,65 @@ import java.sql.*;
 
 public class SQLHandler {
 
-    public static final String TABLE_PLAYERS_NAME = "player";
-    public static final String TABLE_GROUPS_NAME = "group";
+  public static final String TABLE_PLAYERS_NAME = "player";
+  public static final String TABLE_GROUPS_NAME = "group";
 
-    private final String URL;
-    private final String USERNAME;
-    private final String PASSWORD;
+  private final String URL;
+  private final String USERNAME;
+  private final String PASSWORD;
 
-    private Connection connection;
+  private Connection connection;
 
-    public SQLHandler(String url, String user, String password) {
-        this.URL = url;
-        this.USERNAME = user;
-        this.PASSWORD = password;
+  public SQLHandler(String url, String user, String password) {
+    this.URL = url;
+    this.USERNAME = user;
+    this.PASSWORD = password;
 
-        connect();
-        initTables();
+    connect();
+    initTables();
+  }
+
+  public void connect() {
+    try {
+      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
+  }
 
-    public void connect() {
-        try {
-            connection = DriverManager.getConnection(
-                URL,
-                USERNAME,
-                PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+  public void close() {
+    try {
+      if (connection != null) connection.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
+  }
 
-    public void close() {
-        try {
-            if (connection != null)
-                connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+  public void update(PreparedStatement statement) throws SQLException {
+    statement.executeUpdate();
+    statement.close();
+  }
 
-    public void update(PreparedStatement statement) throws SQLException {
-        statement.executeUpdate();
-        statement.close();
-    }
+  public ResultSet query(PreparedStatement statement) throws SQLException {
+    ResultSet rs;
+    rs = statement.executeQuery();
 
-    public ResultSet query(PreparedStatement statement) throws SQLException {
-        ResultSet rs;
-        rs = statement.executeQuery();
+    statement.closeOnCompletion();
 
-        statement.closeOnCompletion();
+    return rs;
+  }
 
-        return rs;
-    }
+  private void executeRawStatement(String cmd) throws SQLException {
+    Statement st = connection.createStatement();
+    st.execute(cmd);
+    st.close();
+  }
 
-    private void executeRawStatement(String cmd) throws SQLException {
-        Statement st = connection.createStatement();
-        st.execute(cmd);
-        st.close();
-    }
+  private void initTables() {
 
-    private void initTables() {
-
-       String cmdPlayers = String.format(
-           """
+    String cmdPlayers =
+        String.format(
+            """
              CREATE TABLE if not exists `%s` (
                 `id` BINARY(16) NOT NULL,
                 `data` text NOT NULL,
@@ -74,10 +71,10 @@ public class SQLHandler {
                 PRIMARY KEY (`id`)
               )
            """,
-           TABLE_PLAYERS_NAME
-       );
+            TABLE_PLAYERS_NAME);
 
-        String cmdGroups = String.format(
+    String cmdGroups =
+        String.format(
             """
               CREATE TABLE if not exists `%s` (
                 `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -89,30 +86,28 @@ public class SQLHandler {
                 UNIQUE KEY `name` (`name`)
               )
            """,
-            TABLE_GROUPS_NAME
-        );
+            TABLE_GROUPS_NAME);
 
-       try {
-           executeRawStatement(cmdPlayers);
-           executeRawStatement(cmdGroups);
-       } catch (SQLException e) {
-           e.printStackTrace();
-       }
+    try {
+      executeRawStatement(cmdPlayers);
+      executeRawStatement(cmdGroups);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public PreparedStatement prepareStatement(String qry) throws SQLException {
+    return connection.prepareStatement(qry);
+  }
+
+  public PreparedStatement prepareStatement(String qry, String... parameters) throws SQLException {
+    var statement = prepareStatement(qry);
+
+    for (int i = 0; i < parameters.length; i++) {
+      String s = parameters[i];
+      statement.setString(i + 1, s);
     }
 
-    public PreparedStatement prepareStatement(String qry) throws SQLException {
-        return connection.prepareStatement(qry);
-    }
-
-    public PreparedStatement prepareStatement(String qry, String... parameters) throws SQLException {
-        var statement = prepareStatement(qry);
-
-        for (int i = 0; i < parameters.length; i++) {
-            String s = parameters[i];
-            statement.setString(i + 1, s);
-        }
-
-        return statement;
-    }
-
+    return statement;
+  }
 }
