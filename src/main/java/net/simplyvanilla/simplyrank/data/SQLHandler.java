@@ -7,16 +7,16 @@ public class SQLHandler {
   public static final String TABLE_PLAYERS_NAME = "player";
   public static final String TABLE_GROUPS_NAME = "group";
 
-  private final String URL;
-  private final String USERNAME;
-  private final String PASSWORD;
+  private final String url;
+  private final String username;
+  private final String password;
 
   private Connection connection;
 
   public SQLHandler(String url, String user, String password) {
-    this.URL = url;
-    this.USERNAME = user;
-    this.PASSWORD = password;
+    this.url = url;
+    this.username = user;
+    this.password = password;
 
     connect();
     initTables();
@@ -24,7 +24,7 @@ public class SQLHandler {
 
   public void connect() {
     try {
-      connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+      connection = DriverManager.getConnection(url, username, password);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -53,9 +53,9 @@ public class SQLHandler {
   }
 
   private void executeRawStatement(String cmd) throws SQLException {
-    Statement st = connection.createStatement();
-    st.execute(cmd);
-    st.close();
+    try (Statement st = connection.createStatement(); ) {
+      st.execute(cmd);
+    }
   }
 
   private void initTables() {

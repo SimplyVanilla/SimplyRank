@@ -1,13 +1,11 @@
 package net.simplyvanilla.simplyrank.data;
 
 import com.google.gson.Gson;
-import net.simplyvanilla.simplyrank.SimplyRankPlugin;
-import org.bukkit.Bukkit;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+import org.bukkit.Bukkit;
 
 public final class DataManager {
 
@@ -87,25 +85,11 @@ public final class DataManager {
   }
 
   public PlayerData loadPlayerDataSync(UUID uuid) {
-    PlayerData playerData = playerDataCache.get(uuid);
-
-    if (playerData == null) {
-      playerData = repository.loadPlayerData(uuid, null);
-      playerDataCache.put(uuid, playerData);
-    }
-
-    return playerData;
+    return playerDataCache.computeIfAbsent(uuid, k -> repository.loadPlayerData(k, null));
   }
 
-  public GroupData loadGroupDataSync(String groupName) throws IOException {
-    GroupData groupData = groupDataCache.get(groupName);
-
-    if (groupData == null) {
-      groupData = repository.loadGroupData(groupName, null);
-      groupDataCache.put(groupName, groupData);
-    }
-
-    return groupData;
+  public GroupData loadGroupDataSync(String groupName) {
+    return groupDataCache.computeIfAbsent(groupName, s -> repository.loadGroupData(s, null));
   }
 
   public void savePlayerDataAsync(
@@ -115,9 +99,7 @@ public final class DataManager {
     Bukkit.getScheduler()
         .runTaskAsynchronously(
             SimplyRankPlugin.getInstance(),
-            () -> {
-              repository.savePlayerData(uuidString, playerData, callback);
-            });
+            () -> repository.savePlayerData(uuidString, playerData, callback));
   }
 
   public void saveGroupDataAsync(
@@ -127,9 +109,7 @@ public final class DataManager {
     Bukkit.getScheduler()
         .runTaskAsynchronously(
             SimplyRankPlugin.getInstance(),
-            () -> {
-              repository.saveGroupData(groupName, groupData, callback);
-            });
+            () -> repository.saveGroupData(groupName, groupData, callback));
   }
 
   public boolean groupExists(String groupName) {
