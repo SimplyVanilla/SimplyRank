@@ -3,8 +3,6 @@ package net.simplyvanilla.simplyrank.placeholder;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 
 import io.github.miniplaceholders.api.Expansion;
-import io.github.miniplaceholders.api.utils.TagsUtils;
-import java.io.IOException;
 import java.util.function.Function;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -72,29 +70,21 @@ public class MiniPlaceholderRegister {
             "code_color",
             (audience, queue, ctx) -> {
               Player player = (Player) audience;
-              try {
-                TextColor color =
-                    plugin
-                        .getDataManager()
-                        .loadGroupDataSync(
-                            plugin
-                                .getDataManager()
-                                .loadPlayerDataSync(player.getUniqueId())
-                                .getPrimaryGroup())
-                        .getColor();
-                return Tag.styling(builder1 -> builder1.color(color));
-              } catch (IOException ignored) {
-                plugin
-                    .getLogger()
-                    .warning("Failed to load group data for player " + player.getName());
-              }
-              return TagsUtils.EMPTY_TAG;
+              TextColor color =
+                  plugin
+                      .getDataManager()
+                      .loadGroupDataSync(
+                          plugin
+                              .getDataManager()
+                              .loadPlayerDataSync(player.getUniqueId())
+                              .getPrimaryGroup())
+                      .getColor();
+              return Tag.styling(builder1 -> builder1.color(color));
             })
         .audiencePlaceholder(
             "prefix",
-            (audience, queue, ctx) -> {
-              try {
-                return Tag.inserting(
+            (audience, queue, ctx) ->
+                Tag.inserting(
                     miniMessage()
                         .deserialize(
                             plugin
@@ -104,14 +94,7 @@ public class MiniPlaceholderRegister {
                                         .getDataManager()
                                         .loadPlayerDataSync(((Player) audience).getUniqueId())
                                         .getPrimaryGroup())
-                                .getPrefix()));
-              } catch (IOException ignored) {
-                plugin
-                    .getLogger()
-                    .severe("Failed to load group data for player " + ignored.getMessage());
-              }
-              return TagsUtils.EMPTY_TAG;
-            })
+                                .getPrefix())))
         .audiencePlaceholder(
             "primary_rank",
             (audience, queue, ctx) ->
