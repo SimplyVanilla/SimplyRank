@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
 import net.simplyvanilla.simplyrank.data.*;
+import net.simplyvanilla.simplyrank.exception.DatabaseConnectionFailException;
 import net.simplyvanilla.simplyrank.gson.TextColorGsonDeserializer;
 import net.simplyvanilla.simplyrank.listener.PlayerJoinEventListener;
 import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
@@ -172,7 +173,7 @@ public class SimplyRankPlugin extends JavaPlugin {
       return new SQLHandler(url, user, password);
 
     } catch (NullPointerException e) {
-      throw new RuntimeException("Could not establish connection to database!");
+      throw new DatabaseConnectionFailException();
     }
   }
 }
