@@ -64,7 +64,7 @@ public class SQLRepository {
       return gson.fromJson(jsonString, GroupData.class);
     } catch (SQLException e) {
       if (callback != null) callback.error(e);
-      else e.printStackTrace();
+      else SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
     }
 
     return null;
@@ -124,7 +124,7 @@ public class SQLRepository {
 
     } catch (SQLException e) {
       if (callback != null) callback.error(e);
-      else e.printStackTrace();
+      else SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
     }
   }
 }
