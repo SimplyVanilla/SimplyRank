@@ -7,15 +7,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoinEventListener implements Listener {
 
-    private final PermissionApplier permissionApplier;
+  private final PermissionApplier permissionApplier;
 
-    public PlayerJoinEventListener(PermissionApplier permissionApplier) {
-        this.permissionApplier = permissionApplier;
-    }
+  public PlayerJoinEventListener(PermissionApplier permissionApplier) {
+    this.permissionApplier = permissionApplier;
+  }
 
-    @EventHandler
-    public void handlePlayerJoinEvent(PlayerJoinEvent event) {
-        permissionApplier.apply(event.getPlayer());
-    }
-
+  @EventHandler
+  public void handlePlayerJoinEvent(PlayerJoinEvent event) {
+    permissionApplier.apply(event.getPlayer());
+  }
 }

@@ -1,347 +1,69 @@
 package net.simplyvanilla.simplyrank.command;
 
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
+import static net.kyori.adventure.text.Component.text;
+
+import java.util.*;
+import net.simplyvanilla.simplyrank.command.impl.AddCommand;
+import net.simplyvanilla.simplyrank.command.impl.CreateGroupCommand;
+import net.simplyvanilla.simplyrank.command.impl.GetCommand;
+import net.simplyvanilla.simplyrank.command.impl.RemoveCommand;
+import net.simplyvanilla.simplyrank.command.impl.SetCommand;
 import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.data.GroupData;
-import net.simplyvanilla.simplyrank.data.IOCallback;
-import net.simplyvanilla.simplyrank.data.PlayerData;
 import net.simplyvanilla.simplyrank.utils.PermissionApplier;
-import net.simplyvanilla.simplyrank.utils.PlayerUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
-import java.nio.file.NoSuchFileException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class SimplyRankCommandExecutor implements CommandExecutor {
+  private final DataManager dataManager;
+  private final PermissionApplier permissionApplier;
+  private final CommandErrorMessages errorMessages;
+  private final Map<String, SubCommand> subCommandMap = new HashMap<>();
 
-    private final DataManager dataManager;
-    private final PermissionApplier permissionApplier;
+  public SimplyRankCommandExecutor(DataManager dataManager, PermissionApplier permissionApplier) {
+    this.dataManager = dataManager;
+    this.permissionApplier = permissionApplier;
+    this.errorMessages = new CommandErrorMessages();
 
-    public SimplyRankCommandExecutor(DataManager dataManager, PermissionApplier permissionApplier) {
-        this.dataManager = dataManager;
-        this.permissionApplier = permissionApplier;
+    this.subCommandMap.put(
+        "create",
+        new CreateGroupCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+    this.subCommandMap.put(
+        "set", new SetCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+    this.subCommandMap.put(
+        "add", new AddCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+    this.subCommandMap.put(
+        "rem", new RemoveCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+    this.subCommandMap.put(
+        "get", new GetCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+  }
+
+  @Override
+  public boolean onCommand(
+      @NotNull CommandSender sender,
+      @NotNull Command command,
+      @NotNull String label,
+      @NotNull String[] args) {
+    if (!(sender instanceof ConsoleCommandSender)) {
+      sender.sendMessage(text(errorMessages.noPermission()));
+      return true;
     }
 
-
-    /*
-        TODO: Major refactoring of onCommand method is severely necessary
-        It will become pretty unmaintainable
-     */
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage("No permission");
-            return true;
-        }
-
-        if (args.length == 0) {
-            sender.sendMessage("Please use /" + label + " <create|set|add|get>");
-            return true;
-        }
-
-        String subCommand = args[0].toLowerCase(Locale.ROOT);
-
-        switch (subCommand) {
-            case "create" -> {
-                if (args.length < 3) {
-                    sender.sendMessage("Please use /" + label + " create <RANK_NAME> <COLOR> [PREFIX]");
-                    return true;
-                }
-
-                String name = args[1];
-                try {
-                    TextColor color = NamedTextColor.NAMES.value(args[2].toUpperCase(Locale.ROOT));
-
-
-                    if (dataManager.groupExists(name)) {
-                        sender.sendMessage("That group does already exist.");
-                        return true;
-                    }
-
-                    String prefix = "";
-                    if (args.length >= 4) {
-                        prefix = Arrays.stream(args, 3, args.length).collect(Collectors.joining(" "));
-                    }
-
-                    GroupData groupData = new GroupData(color, prefix);
-                    dataManager.saveGroupDataAsync(name, groupData, new IOCallback<>() {
-                        @Override
-                        public void success(Void data) {
-                            sender.sendMessage("Successfully created the group!");
-                        }
-
-                        @Override
-                        public void error(Exception error) {
-                            sender.sendMessage("An error occurred!");
-                        }
-                    });
-                } catch (IllegalArgumentException e) {
-                    sender.sendMessage("That color does not exist!");
-                    return true;
-                }
-            }
-
-            case "set" -> {
-                String input = args[1];
-
-                if (args.length != 3) {
-                    sender.sendMessage("Please use /" + label + " set <PLAYER_NAME> <RANK_NAME>");
-                    return true;
-                }
-
-                final UUID uuid = PlayerUtils.resolveUUID(input);
-
-                if (uuid == null) {
-                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
-                    return true;
-                }
-
-                String group = args[2];
-
-                if (!dataManager.groupExists(group)) {
-                    sender.sendMessage("That group does not exist!");
-                    return true;
-                }
-
-                String uuidString = uuid.toString();
-                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
-                    @Override
-                    public void success(PlayerData data) {
-                        coreSetCommandHandler(sender, group, uuidString, data);
-                    }
-
-                    @Override
-                    public void error(Exception error) {
-                        if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
-                            coreSetCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
-                            return;
-                        }
-
-                        error.printStackTrace();
-
-                        System.out.println("Retrieving player data failed");
-                    }
-                });
-            }
-
-            case "add" -> {
-                String input = args[1];
-
-                if (args.length != 3) {
-                    sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
-                    return true;
-                }
-
-                final UUID uuid = PlayerUtils.resolveUUID(input);
-
-                if (uuid == null) {
-                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
-                    return true;
-                }
-
-                String group = args[2];
-
-                if (!dataManager.groupExists(group)) {
-                    sender.sendMessage("That group does not exist!");
-                    return true;
-                }
-
-                String uuidString = uuid.toString();
-                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
-                    @Override
-                    public void success(PlayerData data) {
-                        coreAddCommandHandler(sender, group, uuidString, data);
-                    }
-
-                    @Override
-                    public void error(Exception error) {
-                        if (error instanceof FileNotFoundException || error instanceof NoSuchFileException) {
-                            coreAddCommandHandler(sender, group, uuidString, new PlayerData(new ArrayList<>()));
-                            return;
-                        }
-
-                        error.printStackTrace();
-
-                        System.out.println("Retrieving player data failed");
-                    }
-                });
-            }
-
-            case "get" -> {
-                String input = args[1];
-
-                if (args.length != 2) {
-                    sender.sendMessage("Please use /" + label + " get <PLAYER_NAME>");
-                    return true;
-                }
-
-                final UUID uuid = PlayerUtils.resolveUUID(input);
-
-                if (uuid == null) {
-                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
-                    return true;
-                }
-
-                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
-                    @Override
-                    public void success(PlayerData data) {
-                        sender.sendMessage("Groups from " + input + ": [" + String.join(", ", data.getGroups()) + "]");
-                    }
-
-                    @Override
-                    public void error(Exception error) {
-                        sender.sendMessage("Could not load player data");
-                    }
-                });
-
-            }
-
-            case "rem" -> {
-                String input = args[1];
-
-                if (args.length != 3) {
-                    sender.sendMessage("Please use /" + label + " add <PLAYER_NAME> <RANK_NAME>");
-                    return true;
-                }
-
-
-                final String group = args[2]; //Has to be final to be accessible in callback
-                final UUID uuid = PlayerUtils.resolveUUID(input);
-
-                if (uuid == null) {
-                    sender.sendMessage("Could not find player! (Neither by name, nor by UUID");
-                    return true;
-                }
-
-                //First, fetch the current data
-                dataManager.loadPlayerDataAsync(uuid, new IOCallback<>() {
-                    @Override
-                    public void success(PlayerData data) {
-                        List<String> groups = data.getGroups();
-
-                        if (!groups.contains(group)) {
-                            sender.sendMessage("does not have group.");
-                            return;
-                        }
-
-                        groups.remove(group);
-
-                        if (groups.isEmpty()) {
-                            groups.add("default");
-                        }
-
-                        data.setGroups(groups);
-
-                        //Next, replace the old data with the new one. Both asynchronous to save performance
-                        dataManager.savePlayerDataAsync(uuid.toString(), data, new IOCallback<>() {
-                            @Override
-                            public void success(Void data) {
-                                sender.sendMessage("Group successfully removed!");
-
-                                Player player = Bukkit.getPlayer(uuid);
-
-                                if (player != null) {
-                                    permissionApplier.apply(player);
-                                }
-                            }
-
-                            @Override
-                            public void error(Exception error) {
-                                sender.sendMessage("Could not remove group!");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void error(Exception error) {
-                        sender.sendMessage("Player data not found.");
-                    }
-                });
-            }
-
-        }
-
-        return true;
+    if (args.length == 0) {
+      sender.sendMessage(text(errorMessages.useCorrectFormat()));
+      return true;
     }
 
+    String subCommand = args[0].toLowerCase(Locale.ROOT);
 
-
-    private void coreSetCommandHandler(CommandSender sender, String group, String uuidString, PlayerData data) {
-        List<String> groups = data.getGroups();
-
-        if (!groups.isEmpty() && groups.get(0).equals(group)) {
-            sender.sendMessage("Already primary group");
-            return;
-        }
-
-        if (groups.isEmpty()) {
-            groups.add(group);
-        }
-        else {
-            groups.set(0, group);
-        }
-
-        data.setGroups(groups);
-        dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
-            @Override
-            public void success(Void data) {
-                sender.sendMessage("Successfully saved");
-
-                UUID uuid = UUID.fromString(uuidString);
-                Player player = Bukkit.getPlayer(uuid);
-
-                if (player != null) {
-                    permissionApplier.apply(player);
-                }
-
-            }
-
-            @Override
-            public void error(Exception error) {
-                sender.sendMessage("Saving failed");
-            }
-        });
+    if (!subCommandMap.containsKey(subCommand)) {
+      sender.sendMessage(text(errorMessages.useCorrectFormat()));
+      return true;
     }
 
-    private void coreAddCommandHandler(CommandSender sender, String group, String uuidString, PlayerData data) {
-        List<String> groups = data.getGroups();
-
-        if (groups.contains(group)) {
-            sender.sendMessage("already has group.");
-            return;
-        }
-
-        groups.add(group);
-        groups.remove("default");
-        dataManager.savePlayerDataAsync(uuidString, data, new IOCallback<>() {
-            @Override
-            public void success(Void data) {
-                sender.sendMessage("Sucessfully saved");
-
-                UUID uuid = UUID.fromString(uuidString);
-                Player player = Bukkit.getPlayer(uuid);
-
-                if (player != null) {
-                    permissionApplier.apply(player);
-                }
-            }
-
-            @Override
-            public void error(Exception error) {
-                sender.sendMessage("Saving failed");
-            }
-        });
-    }
-
+    subCommandMap.get(subCommand).execute(new CommandContext(sender, args));
+    return true;
+  }
 }
