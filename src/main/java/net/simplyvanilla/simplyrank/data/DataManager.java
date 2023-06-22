@@ -121,6 +121,6 @@ public final class DataManager {
   }
 
   public void invalidatePlayerData(UUID uniqueId) {
-      this.playerDataCache.remove(uniqueId);
+    this.playerDataCache.remove(uniqueId);
   }
 }
