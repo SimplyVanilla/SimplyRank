@@ -4,27 +4,22 @@ import static net.kyori.adventure.text.Component.text;
 
 import java.util.List;
 import java.util.UUID;
+import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.command.SubCommand;
 import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.IOCallback;
 import net.simplyvanilla.simplyrank.utils.PermissionApplier;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class RemoveCommand implements SubCommand {
-  private final CommandErrorMessages errorMessages;
-  private final DataManager dataManager;
-  private final PermissionApplier permissionApplier;
+public class RemoveCommand extends AbstractCommand {
 
   public RemoveCommand(
       CommandErrorMessages errorMessages,
       DataManager dataManager,
       PermissionApplier permissionApplier) {
-    this.errorMessages = errorMessages;
-    this.dataManager = dataManager;
-    this.permissionApplier = permissionApplier;
+    super(errorMessages, dataManager, permissionApplier);
   }
 
   @Override
@@ -78,20 +73,5 @@ public class RemoveCommand implements SubCommand {
                 }
               });
         });
-  }
-
-  @Override
-  public CommandErrorMessages getErrorMessages() {
-    return errorMessages;
-  }
-
-  @Override
-  public DataManager getDataManager() {
-    return dataManager;
-  }
-
-  @Override
-  public PermissionApplier getPermissionApplier() {
-    return permissionApplier;
   }
 }
