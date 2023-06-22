@@ -7,14 +7,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerQuitEventListener implements Listener {
 
-  private final PlayerPermissionManager playerPermissionManager;
+    private final PlayerPermissionManager playerPermissionManager;
 
-  public PlayerQuitEventListener(PlayerPermissionManager playerPermissionManager) {
-    this.playerPermissionManager = playerPermissionManager;
-  }
+    public PlayerQuitEventListener(PlayerPermissionManager playerPermissionManager) {
+        this.playerPermissionManager = playerPermissionManager;
+    }
 
-  @EventHandler
-  public void handlePlayerQuitEvent(PlayerQuitEvent event) {
-    playerPermissionManager.clear(event.getPlayer());
-  }
+    @EventHandler
+    public void handlePlayerQuitEvent(PlayerQuitEvent event) {
+        playerPermissionManager.clear(event.getPlayer());
+    }
 }
