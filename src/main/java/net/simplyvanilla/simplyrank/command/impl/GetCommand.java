@@ -23,12 +23,12 @@ public class GetCommand extends AbstractCommand {
 
   @Override
   public void execute(CommandContext context) {
-    String input = context.getArgument(1);
-
     if (context.getArguments().length != 2) {
       context.getSender().sendMessage(text(errorMessages.getCommandFormatError()));
       return;
     }
+
+    String input = context.getArgument(1);
 
     final UUID uuid = PlayerUtils.resolveUuid(input);
 
