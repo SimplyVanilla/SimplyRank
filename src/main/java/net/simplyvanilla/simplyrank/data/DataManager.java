@@ -119,4 +119,6 @@ public final class DataManager {
   public boolean groupExists(String groupName) {
     return repository.groupExists(groupName);
   }
+
+  public void invalidatePlayerData(UUID uniqueId) {}
 }

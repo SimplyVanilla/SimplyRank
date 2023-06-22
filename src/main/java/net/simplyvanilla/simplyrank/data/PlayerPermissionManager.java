@@ -13,9 +13,11 @@ public class PlayerPermissionManager {
   private final Map<UUID, PermissionAttachment> attachmentMap = new HashMap<>();
 
   private final Plugin plugin;
+  private final DataManager dataManager;
 
-  public PlayerPermissionManager(Plugin plugin) {
+  public PlayerPermissionManager(Plugin plugin, DataManager dataManager) {
     this.plugin = plugin;
+    this.dataManager = dataManager;
   }
 
   public void setPermission(Player player, String name, boolean value) {
@@ -32,5 +34,7 @@ public class PlayerPermissionManager {
     if (attachment != null) {
       player.removeAttachment(attachment);
     }
+
+    this.dataManager.invalidatePlayerData(player.getUniqueId());
   }
 }
