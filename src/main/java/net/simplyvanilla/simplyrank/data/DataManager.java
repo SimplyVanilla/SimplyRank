@@ -73,6 +73,10 @@ public final class DataManager {
             SimplyRankPlugin.getInstance(),
             () -> {
               var groupData = repository.loadGroupData(groupName, callback);
+              if (groupData == null) {
+                callback.error(new Exception("Group data was null"));
+                return;
+              }
               // Switch back to sync
               Bukkit.getScheduler()
                   .runTask(
