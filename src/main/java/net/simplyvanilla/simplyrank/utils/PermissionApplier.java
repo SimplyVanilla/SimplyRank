@@ -30,7 +30,7 @@ public class PermissionApplier {
           public void success(PlayerData data) {
             Player player = Bukkit.getPlayer(uuid);
 
-            if (player == null) {
+            if (player == null || data == null) {
               return;
             }
 
