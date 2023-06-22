@@ -45,7 +45,7 @@ public class SQLRepository {
       else e.printStackTrace();
     }
 
-    return PlayerData.getDefault();
+    return null;
   }
 
   public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
