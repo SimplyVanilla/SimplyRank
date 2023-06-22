@@ -46,7 +46,7 @@ public class SQLRepository {
             else SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
         }
 
-        return PlayerData.getDefault();
+        return null;
     }
 
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
