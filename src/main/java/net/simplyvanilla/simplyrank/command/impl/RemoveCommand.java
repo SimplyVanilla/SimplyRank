@@ -11,7 +11,6 @@ import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.IOCallback;
 import net.simplyvanilla.simplyrank.utils.PermissionApplier;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class RemoveCommand extends AbstractCommand {
 
@@ -58,13 +57,11 @@ public class RemoveCommand extends AbstractCommand {
                 public void success(Void data) {
                   context.getSender().sendMessage(text("Group successfully removed!"));
 
-                  UUID uuid = context.getOptionalArgument(1).map(UUID::fromString).orElse(null);
-                  if (uuid == null) return;
-                  Player player = Bukkit.getPlayer(uuid);
-
-                  if (player != null) {
-                    permissionApplier.apply(player);
-                  }
+                  context
+                      .getOptionalArgument(1)
+                      .map(UUID::fromString)
+                      .map(Bukkit::getPlayer)
+                      .ifPresent(permissionApplier::apply);
                 }
 
                 @Override
