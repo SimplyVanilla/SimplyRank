@@ -120,5 +120,7 @@ public final class DataManager {
     return repository.groupExists(groupName);
   }
 
-  public void invalidatePlayerData(UUID uniqueId) {}
+  public void invalidatePlayerData(UUID uniqueId) {
+      this.playerDataCache.remove(uniqueId);
+  }
 }
