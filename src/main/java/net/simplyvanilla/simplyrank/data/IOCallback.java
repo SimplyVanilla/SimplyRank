@@ -8,17 +8,17 @@ package net.simplyvanilla.simplyrank.data;
  */
 public interface IOCallback<T, E> {
 
-  /**
-   * Called if the load operation has succeeded
-   *
-   * @param data the data
-   */
-  void success(T data);
+    /**
+     * Called if the load operation has succeeded
+     *
+     * @param data the data
+     */
+    void success(T data);
 
-  /**
-   * Called if the laod operation has failed
-   *
-   * @param error the error
-   */
-  void error(E error);
+    /**
+     * Called if the laod operation has failed
+     *
+     * @param error the error
+     */
+    void error(E error);
 }

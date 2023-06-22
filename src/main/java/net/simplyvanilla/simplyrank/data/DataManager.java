@@ -1,11 +1,12 @@
 package net.simplyvanilla.simplyrank.data;
 
 import com.google.gson.Gson;
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+import org.bukkit.Bukkit;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.simplyvanilla.simplyrank.SimplyRankPlugin;
-import org.bukkit.Bukkit;
 
 public final class DataManager {
 

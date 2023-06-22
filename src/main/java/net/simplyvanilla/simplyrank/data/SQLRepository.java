@@ -28,8 +28,7 @@ public class SQLRepository {
 
         String qry =
             String.format(
-                "SELECT `data` FROM `%s` WHERE `id` = UUID_TO_BIN(?)",
-                SQLHandler.TABLE_PLAYERS_NAME);
+                "SELECT `data` FROM `%s` WHERE `id` = UUID_TO_BIN(?)", SQLHandler.TABLE_PLAYERS_NAME);
 
         try (var result = sql.query(sql.prepareStatement(qry, strUUID))) {
 
@@ -38,21 +37,16 @@ public class SQLRepository {
             }
 
             String jsonString = result.getString("data");
-            if (jsonString == null) {
-                return PlayerData.getDefault();
-            }
+            if (jsonString == null) return PlayerData.getDefault();
 
             return gson.fromJson(jsonString, PlayerData.class);
 
         } catch (SQLException e) {
-            if (callback != null) {
-                callback.error(e);
-            } else {
-                e.printStackTrace();
-            }
+            if (callback != null) callback.error(e);
+            else e.printStackTrace();
         }
 
-        return null;
+        return PlayerData.getDefault();
     }
 
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {
@@ -66,17 +60,12 @@ public class SQLRepository {
             }
 
             String jsonString = result.getString("data");
-            if (jsonString == null) {
-                return null;
-            }
+            if (jsonString == null) return null;
 
             return gson.fromJson(jsonString, GroupData.class);
         } catch (SQLException e) {
-            if (callback != null) {
-                callback.error(e);
-            } else {
-                SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
-            }
+            if (callback != null) callback.error(e);
+            else SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
         }
 
         return null;
@@ -112,8 +101,7 @@ public class SQLRepository {
 
     public boolean groupExists(String name) {
 
-        String qry =
-            String.format("SELECT * FROM `%s` WHERE `name` = ?", SQLHandler.TABLE_GROUPS_NAME);
+        String qry = String.format("SELECT * FROM `%s` WHERE `name` = ?", SQLHandler.TABLE_GROUPS_NAME);
 
         try (ResultSet result = sql.query(sql.prepareStatement(qry, name))) {
             return result.next();
@@ -132,17 +120,12 @@ public class SQLRepository {
             sql.update(statement);
 
             // Sync success
-            if (callback != null) {
-                Bukkit.getScheduler()
-                    .runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
-            }
+            if (callback != null)
+                Bukkit.getScheduler().runTask(SimplyRankPlugin.getInstance(), () -> callback.success(null));
 
         } catch (SQLException e) {
-            if (callback != null) {
-                callback.error(e);
-            } else {
-                SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
-            }
+            if (callback != null) callback.error(e);
+            else SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
         }
     }
 }
