@@ -49,10 +49,7 @@ public interface SubCommand {
                   if (exception instanceof FileNotFoundException
                       || exception instanceof NoSuchFileException) {
                     action.accept(new PlayerData(new ArrayList<>()));
-                    return;
                   }
-
-                  exception.printStackTrace();
                 }));
   }
 
