@@ -43,10 +43,10 @@ public class SQLRepository {
 
         } catch (SQLException e) {
             if (callback != null) callback.error(e);
-            else e.printStackTrace();
+            else SimplyRankPlugin.getInstance().getLogger().severe(e.getMessage());
         }
 
-        return PlayerData.getDefault();
+        return null;
     }
 
     public GroupData loadGroupData(String groupName, IOCallback<GroupData, Exception> callback) {

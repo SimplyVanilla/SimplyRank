@@ -95,7 +95,8 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         try {
             FileConfiguration permsFile = loadConfig("perms.yml");
-            PlayerPermissionManager playerPermissionManager = new PlayerPermissionManager(this);
+            PlayerPermissionManager playerPermissionManager =
+                new PlayerPermissionManager(this, this.dataManager);
             GroupPermissionManager groupPermissionManager = new GroupPermissionManager();
             PermissionApplier permissionApplier =
                 new PermissionApplier(dataManager, playerPermissionManager, groupPermissionManager);
