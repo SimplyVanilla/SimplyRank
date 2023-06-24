@@ -6,6 +6,7 @@ import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
 import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.data.IOCallback;
 import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 
 import java.util.List;
@@ -26,6 +27,11 @@ public class RemoveCommand extends AbstractCommand {
     public void execute(CommandContext context) {
         if (context.getArguments().length != 3) {
             context.getSender().sendMessage(text(errorMessages.remCommandFormatError()));
+            return;
+        }
+        UUID uuid = PlayerUtils.resolveUuid(context.getArgument(1));
+        if (uuid == null) {
+            context.getSender().sendMessage(text(errorMessages.cannotFindPlayerError()));
             return;
         }
 
@@ -51,7 +57,7 @@ public class RemoveCommand extends AbstractCommand {
 
                 // Next, replace the old data with the new one. Both asynchronous to save performance
                 dataManager.savePlayerDataAsync(
-                    context.getArgument(1),
+                    uuid.toString(),
                     data,
                     new IOCallback<>() {
                         @Override
