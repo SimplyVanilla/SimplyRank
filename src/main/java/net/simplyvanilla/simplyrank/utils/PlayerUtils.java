@@ -19,7 +19,7 @@ public class PlayerUtils {
             "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"; // According to the web,
         // I'll admit
         // Using regex to check for UUIDs (lower case to make it case-insensitive)
-        if (input.toLowerCase().matches(regex)) return UUID.fromString(input);
+        if (input.length() == 36 && input.toLowerCase().matches(regex)) return UUID.fromString(input);
 
     /*
        Checking, whether a player was referenced
