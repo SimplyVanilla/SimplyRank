@@ -55,7 +55,13 @@ public interface SubCommand {
     }
 
     default void coreSetCommandHandler(
-        CommandSender sender, String group, String uuidString, PlayerData data) {
+        CommandSender sender, String group, String input, PlayerData data) {
+        UUID uuid = PlayerUtils.resolveUuid(input);
+        if (uuid == null) {
+            sender.sendMessage(text(this.getErrorMessages().cannotFindPlayerError()));
+            return;
+        }
+
         List<String> groups = data.getGroups();
 
         if (!groups.isEmpty() && groups.get(0).equals(group)) {
@@ -72,13 +78,12 @@ public interface SubCommand {
         data.setGroups(groups);
         getDataManager()
             .savePlayerDataAsync(
-                uuidString,
+                uuid.toString(),
                 data,
                 WrappedCallback.wrap(
                     unused -> {
                         sender.sendMessage(text("Successfully saved"));
 
-                        UUID uuid = UUID.fromString(uuidString);
                         Player player = Bukkit.getPlayer(uuid);
 
                         if (player != null) {
@@ -89,7 +94,12 @@ public interface SubCommand {
     }
 
     default void coreAddCommandHandler(
-        CommandSender sender, String group, String uuidString, PlayerData data) {
+        CommandSender sender, String group, String input, PlayerData data) {
+        UUID uuid = PlayerUtils.resolveUuid(input);
+        if (uuid == null) {
+            sender.sendMessage(text(this.getErrorMessages().cannotFindPlayerError()));
+            return;
+        }
         List<String> groups = data.getGroups();
 
         if (groups.contains(group)) {
@@ -101,13 +111,12 @@ public interface SubCommand {
         groups.remove("default");
         getDataManager()
             .savePlayerDataAsync(
-                uuidString,
+                uuid.toString(),
                 data,
                 WrappedCallback.wrap(
                     unused -> {
                         sender.sendMessage(text("Sucessfully saved"));
 
-                        UUID uuid = UUID.fromString(uuidString);
                         Player player = Bukkit.getPlayer(uuid);
 
                         if (player != null) {
