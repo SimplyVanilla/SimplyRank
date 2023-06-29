@@ -10,6 +10,7 @@ import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static net.kyori.adventure.text.Component.text;
@@ -64,10 +65,7 @@ public class RemoveCommand extends AbstractCommand {
                         public void success(Void data) {
                             context.getSender().sendMessage(text("Group successfully removed!"));
 
-                            context
-                                .getOptionalArgument(1)
-                                .map(UUID::fromString)
-                                .map(Bukkit::getPlayer)
+                            Optional.ofNullable(Bukkit.getPlayer(uuid))
                                 .ifPresent(permissionApplier::apply);
                         }
 

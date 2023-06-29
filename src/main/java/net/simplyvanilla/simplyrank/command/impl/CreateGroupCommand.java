@@ -34,7 +34,7 @@ public class CreateGroupCommand extends AbstractCommand {
 
         String name = context.getArgument(1);
         try {
-            TextColor color = NamedTextColor.NAMES.value(context.getArgument(2).toUpperCase(Locale.ROOT));
+            TextColor color = NamedTextColor.NAMES.value(context.getArgument(2).toLowerCase(Locale.ROOT));
 
             if (dataManager.groupExists(name)) {
                 context.getSender().sendMessage(text("That group does already exist."));
