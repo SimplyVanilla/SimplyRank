@@ -3,10 +3,7 @@ package net.simplyvanilla.simplyrank.command;
 import net.simplyvanilla.simplyrank.command.impl.*;
 import net.simplyvanilla.simplyrank.data.DataManager;
 import net.simplyvanilla.simplyrank.utils.PermissionApplier;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -45,7 +42,7 @@ public class SimplyRankCommandExecutor implements CommandExecutor {
         @NotNull Command command,
         @NotNull String label,
         @NotNull String[] args) {
-        if (!(sender instanceof ConsoleCommandSender)) {
+        if (!(sender instanceof ConsoleCommandSender) && !(sender instanceof RemoteConsoleCommandSender)) {
             sender.sendMessage(text(errorMessages.noPermission()));
             return true;
         }
