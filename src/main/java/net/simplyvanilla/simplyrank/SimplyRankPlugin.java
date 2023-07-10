@@ -9,6 +9,7 @@ import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
 import net.simplyvanilla.simplyrank.data.*;
 import net.simplyvanilla.simplyrank.exception.DatabaseConnectionFailException;
 import net.simplyvanilla.simplyrank.gson.TextColorGsonDeserializer;
+import net.simplyvanilla.simplyrank.listener.PlayerIgnoreFullServerListener;
 import net.simplyvanilla.simplyrank.listener.PlayerJoinEventListener;
 import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
@@ -121,6 +122,9 @@ public class SimplyRankPlugin extends JavaPlugin {
             getServer()
                 .getPluginManager()
                 .registerEvents(new PlayerQuitEventListener(playerPermissionManager), this);
+            getServer()
+                .getPluginManager()
+                .registerEvents(new PlayerIgnoreFullServerListener(), this);
 
             getCommand("simplyrank")
                 .setExecutor(new SimplyRankCommandExecutor(dataManager, permissionApplier));
