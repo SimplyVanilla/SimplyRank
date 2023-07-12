@@ -23,3 +23,7 @@ permissions:
   simplyrank.manage:
     description: whether the player can change other player's rank
     default: op
+
+  simplyrank.joinfullserver:
+    description: whether the player can join a full server
+    default: false
