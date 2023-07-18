@@ -21,6 +21,11 @@ public class PermissionApplier {
         this.groupPermissionManager = groupPermissionManager;
     }
 
+    public void apply(Player player) {
+        apply(player, () -> {
+        });
+    }
+
     public void apply(Player player, Runnable callback) {
         UUID uuid = player.getUniqueId();
         dataManager.loadPlayerDataAsync(
