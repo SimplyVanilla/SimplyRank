@@ -22,6 +22,11 @@ public class PermissionApplier {
     }
 
     public void apply(Player player) {
+        apply(player, () -> {
+        });
+    }
+
+    public void apply(Player player, Runnable callback) {
         UUID uuid = player.getUniqueId();
         dataManager.loadPlayerDataAsync(
             uuid,
@@ -31,6 +36,7 @@ public class PermissionApplier {
                     Player player = Bukkit.getPlayer(uuid);
 
                     if (player == null || data == null) {
+                        callback.run();
                         return;
                     }
 
@@ -42,11 +48,14 @@ public class PermissionApplier {
 
                     player.recalculatePermissions();
                     player.updateCommands();
+
+                    callback.run();
                 }
 
                 @Override
                 public void error(Exception error) {
                     // No important erros here
+                    callback.run();
                 }
             });
     }
