@@ -31,6 +31,7 @@ public class PermissionApplier {
                     Player player = Bukkit.getPlayer(uuid);
 
                     if (player == null || data == null) {
+                        callback.run();
                         return;
                     }
 
