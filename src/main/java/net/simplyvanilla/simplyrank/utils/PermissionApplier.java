@@ -49,6 +49,7 @@ public class PermissionApplier {
                 @Override
                 public void error(Exception error) {
                     // No important erros here
+                    callback.run();
                 }
             });
     }
