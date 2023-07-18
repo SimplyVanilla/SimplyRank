@@ -25,10 +25,10 @@ public class PlayerLoginEventListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void handleJoin(PlayerJoinEvent event) {
-        this.permissionApplier.apply(event.getPlayer());
-
-        if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() && !event.getPlayer().hasPermission("simplyrank.joinfullserver")) {
-            event.getPlayer().kick(Component.translatable("Server is full."));
-        }
+        this.permissionApplier.apply(event.getPlayer(), () -> {
+            if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() && !event.getPlayer().hasPermission("simplyrank.joinfullserver")) {
+                event.getPlayer().kick(Component.translatable("Server is full."));
+            }
+        });
     }
 }
