@@ -29,7 +29,6 @@ public class PlayerLoginEventListener implements Listener {
 
         if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() && !event.getPlayer().hasPermission("simplyrank.joinfullserver")) {
             event.getPlayer().kick(Component.translatable("Server is full."));
-            return;
         }
     }
 }
