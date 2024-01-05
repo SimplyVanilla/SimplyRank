@@ -39,16 +39,7 @@ public class PermissionApplier {
                         callback.run();
                         return;
                     }
-
-                    String group = data.getPrimaryGroup();
-                    playerPermissionManager.clear(player);
-                    groupPermissionManager
-                        .getPermissions(group)
-                        .forEach((k, v) -> playerPermissionManager.setPermission(player, k, v));
-
-                    player.recalculatePermissions();
-                    player.updateCommands();
-
+                    applyPermission(player, data);
                     callback.run();
                 }
 
@@ -58,5 +49,16 @@ public class PermissionApplier {
                     callback.run();
                 }
             });
+    }
+
+    public void applyPermission(Player player, PlayerData data) {
+        String group = data.getPrimaryGroup();
+        playerPermissionManager.clear(player);
+        groupPermissionManager
+            .getPermissions(group)
+            .forEach((k, v) -> playerPermissionManager.setPermission(player, k, v));
+
+        player.recalculatePermissions();
+        player.updateCommands();
     }
 }

@@ -33,6 +33,15 @@ dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.5'
     compileOnly 'io.github.miniplaceholders:miniplaceholders-api:2.2.3'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.20:3.9.0'
+    testRuntimeOnly 'mysql:mysql-connector-java:8.0.26'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 processResources {

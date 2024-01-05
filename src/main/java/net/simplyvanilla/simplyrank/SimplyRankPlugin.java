@@ -114,7 +114,7 @@ public class SimplyRankPlugin extends JavaPlugin {
                         }
                     });
             }
-            
+
             getServer()
                 .getPluginManager()
                 .registerEvents(new PlayerQuitEventListener(playerPermissionManager), this);
@@ -129,9 +129,11 @@ public class SimplyRankPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        new SimplyRankPlaceholderExpansion().register();
-        new ScoreboardTeamsPlaceholderExtension().register();
-        new MiniPlaceholderRegister(this).register();
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new SimplyRankPlaceholderExpansion().register();
+            new ScoreboardTeamsPlaceholderExtension().register();
+            new MiniPlaceholderRegister(this).register();
+        }
     }
 
     @Override

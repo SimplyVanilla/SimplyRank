@@ -1,0 +1,15 @@
+# The format for this file is as follows:
+# groupname:
+#   permission1: true
+#   permission2: false
+#
+# Example:
+# default:
+#   bukkit.command.version: false
+#   bukkit.command.plugins: false
+# admin:
+#   minecraft.command.op: true
+
+default:
+  minecraft.command.me: true
+  minecraft.command.op: false

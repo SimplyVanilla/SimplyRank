@@ -124,4 +124,8 @@ public final class DataManager {
     public void invalidatePlayerData(UUID uniqueId) {
         this.playerDataCache.remove(uniqueId);
     }
+
+    public SQLRepository getRepository() {
+        return this.repository;
+    }
 }
