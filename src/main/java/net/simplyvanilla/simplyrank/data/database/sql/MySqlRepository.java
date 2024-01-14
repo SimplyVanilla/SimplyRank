@@ -5,6 +5,7 @@ import net.simplyvanilla.simplyrank.data.database.group.GroupData;
 import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.data.database.group.GroupRepository;
 import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
+import net.simplyvanilla.simplyrank.data.database.sql.exceptions.MySqlStatementFailedException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,7 +43,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository {
             return this.gson.fromJson(jsonString, PlayerData.class);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new MySqlStatementFailedException(e);
         }
     }
 
@@ -61,7 +62,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository {
 
             return Optional.of(this.gson.fromJson(jsonString, GroupData.class));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new MySqlStatementFailedException(e);
         }
     }
 
@@ -80,7 +81,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository {
             this.sql.update(statement);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new MySqlStatementFailedException(e);
         }
     }
 
@@ -100,7 +101,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository {
 
             this.sql.update(statement);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new MySqlStatementFailedException(e);
         }
     }
 
@@ -111,7 +112,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository {
         try (ResultSet result = this.sql.query(this.sql.prepareStatement(qry, groupName))) {
             return result.next();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new MySqlStatementFailedException(e);
         }
     }
 }

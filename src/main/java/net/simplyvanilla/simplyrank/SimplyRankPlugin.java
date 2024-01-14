@@ -38,10 +38,11 @@ public class SimplyRankPlugin extends JavaPlugin {
     private static SimplyRankPlugin instance;
     private PlayerDataService playerDataService;
     private MySqlClient mySqlClient = null;
-    private MySqlRepository mySqlRepository = null;
+
 
     @Override
     public void onEnable() {
+        MySqlRepository mySqlRepository = null;
         FileConfiguration config;
         instance = this;
 

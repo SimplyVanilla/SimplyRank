@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.UUID;
 
-public class PlayerDataServiceTest {
+class PlayerDataServiceTest {
 
     private MockPlugin plugin;
     private GroupRepository groupRepository;

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class PlayerPermissionServiceTest {
+class PlayerPermissionServiceTest {
     private ServerMock server;
     private MockPlugin plugin;
     private GroupRepository groupRepository;

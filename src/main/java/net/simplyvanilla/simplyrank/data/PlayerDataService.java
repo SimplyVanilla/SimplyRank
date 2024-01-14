@@ -69,7 +69,7 @@ public final class PlayerDataService {
     }
 
     public PlayerData loadPlayerDataSync(UUID uuid) {
-        return this.playerDataCache.computeIfAbsent(uuid, k -> this.playerDataRepository.findById(k));
+        return this.playerDataCache.computeIfAbsent(uuid, this.playerDataRepository::findById);
     }
 
     public GroupData loadGroupDataSync(String groupName) {

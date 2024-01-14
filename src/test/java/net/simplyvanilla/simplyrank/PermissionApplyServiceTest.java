@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.UUID;
 
-public class PermissionApplyServiceTest {
+class PermissionApplyServiceTest {
     private ServerMock server;
     private MockPlugin plugin;
     private GroupRepository groupRepository;
