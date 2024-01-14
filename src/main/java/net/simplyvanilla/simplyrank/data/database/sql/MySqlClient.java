@@ -1,8 +1,8 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.data.database.sql;
 
 import java.sql.*;
 
-public class SQLHandler {
+public class MySqlClient {
 
     public static final String TABLE_PLAYERS_NAME = "player";
     public static final String TABLE_GROUPS_NAME = "group";
@@ -13,7 +13,7 @@ public class SQLHandler {
 
     private Connection connection;
 
-    public SQLHandler(String url, String user, String password) {
+    public MySqlClient(String url, String user, String password) {
         this.url = url;
         this.username = user;
         this.password = password;

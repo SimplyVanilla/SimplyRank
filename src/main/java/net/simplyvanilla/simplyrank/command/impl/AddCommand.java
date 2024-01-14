@@ -3,8 +3,8 @@ package net.simplyvanilla.simplyrank.command.impl;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -12,9 +12,9 @@ public class AddCommand extends AbstractCommand {
 
     public AddCommand(
         CommandErrorMessages errorMessages,
-        DataManager dataManager,
-        PermissionApplier permissionApplier) {
-        super(errorMessages, dataManager, permissionApplier);
+        PlayerDataService playerDataService,
+        PermissionApplyService permissionApplyService) {
+        super(errorMessages, playerDataService, permissionApplyService);
     }
 
     @Override

@@ -3,10 +3,10 @@ package net.simplyvanilla.simplyrank.command.impl;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.data.IOCallback;
-import net.simplyvanilla.simplyrank.data.PlayerData;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.callback.IOCallback;
+import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 
 import java.util.UUID;
@@ -17,9 +17,9 @@ public class GetCommand extends AbstractCommand {
 
     public GetCommand(
         CommandErrorMessages errorMessages,
-        DataManager dataManager,
-        PermissionApplier permissionApplier) {
-        super(errorMessages, dataManager, permissionApplier);
+        PlayerDataService playerDataService,
+        PermissionApplyService permissionApplyService) {
+        super(errorMessages, playerDataService, permissionApplyService);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class GetCommand extends AbstractCommand {
             return;
         }
 
-        dataManager.loadPlayerDataAsync(
+        playerDataService.loadPlayerDataAsync(
             uuid,
             new IOCallback<>() {
                 @Override

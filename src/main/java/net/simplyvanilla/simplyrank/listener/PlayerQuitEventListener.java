@@ -1,20 +1,20 @@
 package net.simplyvanilla.simplyrank.listener;
 
-import net.simplyvanilla.simplyrank.data.PlayerPermissionManager;
+import net.simplyvanilla.simplyrank.data.PlayerPermissionService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerQuitEventListener implements Listener {
 
-    private final PlayerPermissionManager playerPermissionManager;
+    private final PlayerPermissionService playerPermissionService;
 
-    public PlayerQuitEventListener(PlayerPermissionManager playerPermissionManager) {
-        this.playerPermissionManager = playerPermissionManager;
+    public PlayerQuitEventListener(PlayerPermissionService playerPermissionService) {
+        this.playerPermissionService = playerPermissionService;
     }
 
     @EventHandler
     public void handlePlayerQuitEvent(PlayerQuitEvent event) {
-        playerPermissionManager.clear(event.getPlayer());
+        playerPermissionService.clear(event.getPlayer());
     }
 }

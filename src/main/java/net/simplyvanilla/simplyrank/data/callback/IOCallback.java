@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.data.callback;
 
 /**
  * Represents the two possible outcomes of an IO operation in the context of this plugin

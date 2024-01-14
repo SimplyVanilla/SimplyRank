@@ -1,14 +1,22 @@
 package net.simplyvanilla.simplyrank;
 
-import net.simplyvanilla.simplyrank.data.GroupPermissionManager;
+import net.simplyvanilla.simplyrank.data.GroupPermissionService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;
 
 public class TestUtils {
 
-    public static GroupPermissionManager createDefaultGroupPermissions() {
-        GroupPermissionManager manager = new GroupPermissionManager();
+    public static void sleep(int ticks) {
+        try {
+            Thread.sleep(ticks * 50L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static GroupPermissionService createDefaultGroupPermissions() {
+        GroupPermissionService manager = new GroupPermissionService();
         manager.setPermission("default", "minecraft.command.me", true);
         manager.setPermission("default", "minecraft.command.tell", false);
         manager.setPermission("default", "minecraft.command.help", true);

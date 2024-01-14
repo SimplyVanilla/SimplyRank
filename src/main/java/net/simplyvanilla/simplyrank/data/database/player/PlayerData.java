@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.data.database.player;
 
 import java.util.ArrayList;
 import java.util.Collections;

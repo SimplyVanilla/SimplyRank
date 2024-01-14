@@ -6,7 +6,13 @@ import com.google.gson.GsonBuilder;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
-import net.simplyvanilla.simplyrank.data.*;
+import net.simplyvanilla.simplyrank.data.GroupPermissionService;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.PlayerPermissionService;
+import net.simplyvanilla.simplyrank.data.callback.IOCallback;
+import net.simplyvanilla.simplyrank.data.database.group.GroupData;
+import net.simplyvanilla.simplyrank.data.database.sql.MySqlClient;
+import net.simplyvanilla.simplyrank.data.database.sql.MySqlRepository;
 import net.simplyvanilla.simplyrank.exception.DatabaseConnectionFailException;
 import net.simplyvanilla.simplyrank.gson.TextColorGsonDeserializer;
 import net.simplyvanilla.simplyrank.listener.PlayerLoginEventListener;
@@ -14,7 +20,7 @@ import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -30,8 +36,9 @@ import java.util.logging.Level;
 public class SimplyRankPlugin extends JavaPlugin {
 
     private static SimplyRankPlugin instance;
-    private DataManager dataManager;
-    private SQLHandler sqlHandler = null;
+    private PlayerDataService playerDataService;
+    private MySqlClient mySqlClient = null;
+    private MySqlRepository mySqlRepository = null;
 
     @Override
     public void onEnable() {
@@ -48,7 +55,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         }
 
         try {
-            sqlHandler = createSQLHandlerFromConfig(config);
+            mySqlClient = createSQLHandlerFromConfig(config);
         } catch (NullPointerException e) {
             getLogger()
                 .log(
@@ -66,18 +73,20 @@ public class SimplyRankPlugin extends JavaPlugin {
                     }.getType(), new TextColorGsonDeserializer())
                 .create();
 
+        mySqlRepository = new MySqlRepository(mySqlClient, gson);
+
         File dataFolder = getDataFolder();
 
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
 
-        dataManager =
-            new DataManager(gson, sqlHandler); // Using a data manager that uses an sql database.
+        playerDataService =
+            new PlayerDataService(this, mySqlRepository, mySqlRepository);
 
-        if (!dataManager.groupExists("default")) {
+        if (!playerDataService.groupExists("default")) {
             GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
-            dataManager.saveGroupDataAsync(
+            playerDataService.saveGroupDataAsync(
                 "default",
                 defaultData,
                 new IOCallback<>() {
@@ -95,11 +104,11 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         try {
             FileConfiguration permsFile = loadConfig("perms.yml");
-            PlayerPermissionManager playerPermissionManager =
-                new PlayerPermissionManager(this, this.dataManager);
-            GroupPermissionManager groupPermissionManager = new GroupPermissionManager();
-            PermissionApplier permissionApplier =
-                new PermissionApplier(dataManager, playerPermissionManager, groupPermissionManager);
+            PlayerPermissionService playerPermissionService =
+                new PlayerPermissionService(this, this.playerDataService);
+            GroupPermissionService groupPermissionService = new GroupPermissionService();
+            PermissionApplyService permissionApplyService =
+                new PermissionApplyService(playerDataService, playerPermissionService, groupPermissionService);
 
             Set<String> keys = permsFile.getKeys(false);
 
@@ -110,20 +119,20 @@ public class SimplyRankPlugin extends JavaPlugin {
                 sectionKeys.forEach(
                     (k, v) -> {
                         if (v instanceof Boolean value) {
-                            groupPermissionManager.setPermission(key, k, value);
+                            groupPermissionService.setPermission(key, k, value);
                         }
                     });
             }
 
             getServer()
                 .getPluginManager()
-                .registerEvents(new PlayerQuitEventListener(playerPermissionManager), this);
+                .registerEvents(new PlayerQuitEventListener(playerPermissionService), this);
             getServer()
                 .getPluginManager()
-                .registerEvents(new PlayerLoginEventListener(permissionApplier), this);
+                .registerEvents(new PlayerLoginEventListener(permissionApplyService), this);
 
             getCommand("simplyrank")
-                .setExecutor(new SimplyRankCommandExecutor(dataManager, permissionApplier));
+                .setExecutor(new SimplyRankCommandExecutor(playerDataService, permissionApplyService));
         } catch (IOException e) {
             getLogger().severe("Could not load perms.yml");
             e.printStackTrace();
@@ -139,13 +148,13 @@ public class SimplyRankPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
-        if (sqlHandler != null) {
-            sqlHandler.close();
+        if (mySqlClient != null) {
+            mySqlClient.close();
         }
     }
 
-    public DataManager getDataManager() {
-        return dataManager;
+    public PlayerDataService getDataManager() {
+        return playerDataService;
     }
 
     public static SimplyRankPlugin getInstance() {
@@ -168,14 +177,14 @@ public class SimplyRankPlugin extends JavaPlugin {
         return YamlConfiguration.loadConfiguration(configFile);
     }
 
-    private SQLHandler createSQLHandlerFromConfig(FileConfiguration config) {
+    private MySqlClient createSQLHandlerFromConfig(FileConfiguration config) {
 
         try {
             String url = config.getString("database.url");
             String password = config.getString("database.password");
             String user = config.getString("database.username");
 
-            return new SQLHandler(url, user, password);
+            return new MySqlClient(url, user, password);
 
         } catch (NullPointerException e) {
             throw new DatabaseConnectionFailException();

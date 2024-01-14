@@ -1,20 +1,20 @@
 package net.simplyvanilla.simplyrank.command;
 
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 
 public abstract class AbstractCommand implements SubCommand {
     protected final CommandErrorMessages errorMessages;
-    protected final DataManager dataManager;
-    protected final PermissionApplier permissionApplier;
+    protected final PlayerDataService playerDataService;
+    protected final PermissionApplyService permissionApplyService;
 
     protected AbstractCommand(
         CommandErrorMessages errorMessages,
-        DataManager dataManager,
-        PermissionApplier permissionApplier) {
+        PlayerDataService playerDataService,
+        PermissionApplyService permissionApplyService) {
         this.errorMessages = errorMessages;
-        this.dataManager = dataManager;
-        this.permissionApplier = permissionApplier;
+        this.playerDataService = playerDataService;
+        this.permissionApplyService = permissionApplyService;
     }
 
     @Override
@@ -23,12 +23,12 @@ public abstract class AbstractCommand implements SubCommand {
     }
 
     @Override
-    public DataManager getDataManager() {
-        return dataManager;
+    public PlayerDataService getDataManager() {
+        return playerDataService;
     }
 
     @Override
-    public PermissionApplier getPermissionApplier() {
-        return permissionApplier;
+    public PermissionApplyService getPermissionApplier() {
+        return permissionApplyService;
     }
 }

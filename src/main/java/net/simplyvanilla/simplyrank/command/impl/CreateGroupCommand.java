@@ -5,10 +5,10 @@ import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.data.GroupData;
-import net.simplyvanilla.simplyrank.data.WrappedCallback;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.database.group.GroupData;
+import net.simplyvanilla.simplyrank.data.callback.WrappedCallback;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -20,9 +20,9 @@ public class CreateGroupCommand extends AbstractCommand {
 
     public CreateGroupCommand(
         CommandErrorMessages errorMessages,
-        DataManager dataManager,
-        PermissionApplier permissionApplier) {
-        super(errorMessages, dataManager, permissionApplier);
+        PlayerDataService playerDataService,
+        PermissionApplyService permissionApplyService) {
+        super(errorMessages, playerDataService, permissionApplyService);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class CreateGroupCommand extends AbstractCommand {
         try {
             TextColor color = NamedTextColor.NAMES.value(context.getArgument(2).toLowerCase(Locale.ROOT));
 
-            if (dataManager.groupExists(name)) {
+            if (playerDataService.groupExists(name)) {
                 context.getSender().sendMessage(text("That group does already exist."));
                 return;
             }
@@ -49,7 +49,7 @@ public class CreateGroupCommand extends AbstractCommand {
             }
 
             GroupData groupData = new GroupData(color, prefix);
-            dataManager.saveGroupDataAsync(
+            playerDataService.saveGroupDataAsync(
                 name,
                 groupData,
                 WrappedCallback.wrap(

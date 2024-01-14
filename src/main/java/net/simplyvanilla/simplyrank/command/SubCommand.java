@@ -1,9 +1,9 @@
 package net.simplyvanilla.simplyrank.command;
 
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.data.PlayerData;
-import net.simplyvanilla.simplyrank.data.WrappedCallback;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.data.callback.WrappedCallback;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -23,9 +23,9 @@ public interface SubCommand {
 
     CommandErrorMessages getErrorMessages();
 
-    DataManager getDataManager();
+    PlayerDataService getDataManager();
 
-    PermissionApplier getPermissionApplier();
+    PermissionApplyService getPermissionApplier();
 
     default void fetchPlayerData(CommandContext context, String group, Consumer<PlayerData> action) {
         String input = context.getArgument(1);
@@ -78,7 +78,7 @@ public interface SubCommand {
         data.setGroups(groups);
         getDataManager()
             .savePlayerDataAsync(
-                uuid.toString(),
+                uuid,
                 data,
                 WrappedCallback.wrap(
                     unused -> {
@@ -111,7 +111,7 @@ public interface SubCommand {
         groups.remove("default");
         getDataManager()
             .savePlayerDataAsync(
-                uuid.toString(),
+                uuid,
                 data,
                 WrappedCallback.wrap(
                     unused -> {

@@ -1,34 +1,35 @@
-package net.simplyvanilla.simplyrank.utils;
+package net.simplyvanilla.simplyrank.data;
 
-import net.simplyvanilla.simplyrank.data.*;
+import net.simplyvanilla.simplyrank.data.callback.IOCallback;
+import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class PermissionApplier {
+public class PermissionApplyService {
 
-    private final DataManager dataManager;
-    private final PlayerPermissionManager playerPermissionManager;
-    private final GroupPermissionManager groupPermissionManager;
+    private final PlayerDataService playerDataService;
+    private final PlayerPermissionService playerPermissionService;
+    private final GroupPermissionService groupPermissionService;
 
-    public PermissionApplier(
-        DataManager dataManager,
-        PlayerPermissionManager playerPermissionManager,
-        GroupPermissionManager groupPermissionManager) {
-        this.dataManager = dataManager;
-        this.playerPermissionManager = playerPermissionManager;
-        this.groupPermissionManager = groupPermissionManager;
+    public PermissionApplyService(
+        PlayerDataService playerDataService,
+        PlayerPermissionService playerPermissionService,
+        GroupPermissionService groupPermissionService) {
+        this.playerDataService = playerDataService;
+        this.playerPermissionService = playerPermissionService;
+        this.groupPermissionService = groupPermissionService;
     }
 
     public void apply(Player player) {
-        apply(player, () -> {
+        this.apply(player, () -> {
         });
     }
 
     public void apply(Player player, Runnable callback) {
         UUID uuid = player.getUniqueId();
-        dataManager.loadPlayerDataAsync(
+        playerDataService.loadPlayerDataAsync(
             uuid,
             new IOCallback<>() {
                 @Override
@@ -53,10 +54,10 @@ public class PermissionApplier {
 
     public void applyPermission(Player player, PlayerData data) {
         String group = data.getPrimaryGroup();
-        playerPermissionManager.clear(player);
-        groupPermissionManager
+        playerPermissionService.clear(player);
+        groupPermissionService
             .getPermissions(group)
-            .forEach((k, v) -> playerPermissionManager.setPermission(player, k, v));
+            .forEach((k, v) -> playerPermissionService.setPermission(player, k, v));
 
         player.recalculatePermissions();
         player.updateCommands();
