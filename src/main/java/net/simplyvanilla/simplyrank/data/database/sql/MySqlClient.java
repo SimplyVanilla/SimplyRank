@@ -1,5 +1,7 @@
 package net.simplyvanilla.simplyrank.data.database.sql;
 
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+
 import java.sql.*;
 
 public class MySqlClient {
@@ -26,7 +28,7 @@ public class MySqlClient {
         try {
             connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not connect to MySQL database", e);
         }
     }
 
@@ -34,7 +36,7 @@ public class MySqlClient {
         try {
             if (connection != null) connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not close MySQL connection", e);
         }
     }
 
@@ -92,7 +94,7 @@ public class MySqlClient {
             executeRawStatement(cmdPlayers);
             executeRawStatement(cmdGroups);
         } catch (SQLException e) {
-            e.printStackTrace();
+            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not create tables", e);
         }
     }
 
