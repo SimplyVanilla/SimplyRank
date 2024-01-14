@@ -17,6 +17,7 @@ import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
 import net.simplyvanilla.simplyrank.database.GroupRepositoryMock;
 import net.simplyvanilla.simplyrank.database.PlayerDataRepositoryMock;
 import net.simplyvanilla.simplyrank.listener.PlayerLoginEventListener;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 class PermissionApplyServiceTest {
     private ServerMock server;
@@ -106,13 +108,15 @@ class PermissionApplyServiceTest {
         PlayerMock player = this.server.addPlayer();
 
         this.permissionApplyService.apply(player);
-        TestUtils.sleep(1);
-
-        try {
-            this.server.getScheduler().performOneTick();
-        } catch (UnimplementedOperationException ignored) {
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> {
+            try {
+                this.server.getScheduler().performOneTick();
+                return false;
+            } catch (UnimplementedOperationException ignored) {
 //            // this error comes because updateCommands is not implemented in MockBukkit
-        }
+                return true;
+            }
+        });
 
         Assertions.assertFalse(player.hasPermission("test.permission"));
         Assertions.assertTrue(player.hasPermission("test.permission2"));
@@ -128,13 +132,15 @@ class PermissionApplyServiceTest {
 
         PlayerMock player = this.server.addPlayer();
 
-        TestUtils.sleep(1);
-
-        try {
-            this.server.getScheduler().performOneTick();
-        } catch (UnimplementedOperationException ignored) {
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> {
+            try {
+                this.server.getScheduler().performOneTick();
+                return false;
+            } catch (UnimplementedOperationException ignored) {
 //            // this error comes because updateCommands is not implemented in MockBukkit
-        }
+                return true;
+            }
+        });
 
         Assertions.assertFalse(player.hasPermission("test.permission"));
         Assertions.assertTrue(player.hasPermission("test.permission2"));
@@ -151,13 +157,15 @@ class PermissionApplyServiceTest {
         PlayerMock player = this.server.addPlayer();
         this.playerDataRepository.save(player.getUniqueId(), new PlayerData(List.of("admin")));
 
-        TestUtils.sleep(1);
-
-        try {
-            this.server.getScheduler().performOneTick();
-        } catch (UnimplementedOperationException ignored) {
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> {
+            try {
+                this.server.getScheduler().performOneTick();
+                return false;
+            } catch (UnimplementedOperationException ignored) {
 //            // this error comes because updateCommands is not implemented in MockBukkit
-        }
+                return true;
+            }
+        });
 
         Assertions.assertTrue(player.hasPermission("test.permission"));
         Assertions.assertFalse(player.hasPermission("test.permission2"));

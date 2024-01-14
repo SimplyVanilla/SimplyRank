@@ -9,6 +9,7 @@ public class CallbackMock<T, E> implements IOCallback<T, E> {
 
     private boolean successCalled = false;
     private boolean errorCalled = false;
+    private boolean executed = false;
     private T data;
     private E error;
 
@@ -16,12 +17,14 @@ public class CallbackMock<T, E> implements IOCallback<T, E> {
     public void success(T data) {
         this.successCalled = true;
         this.data = data;
+        this.executed = true;
     }
 
     @Override
     public void error(E error) {
         this.errorCalled = true;
         this.error = error;
+        this.executed = true;
     }
 
     public boolean isSuccessCalled() {
@@ -38,5 +41,9 @@ public class CallbackMock<T, E> implements IOCallback<T, E> {
 
     public E getError() {
         return this.error;
+    }
+
+    public boolean isExecuted() {
+        return this.executed;
     }
 }

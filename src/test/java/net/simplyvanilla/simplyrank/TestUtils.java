@@ -7,14 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class TestUtils {
 
-    public static void sleep(int ticks) {
-        try {
-            Thread.sleep(ticks * 50L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static GroupPermissionService createDefaultGroupPermissions() {
         GroupPermissionService manager = new GroupPermissionService();
         manager.setPermission("default", "minecraft.command.me", true);
