@@ -1,5 +1,6 @@
 package net.simplyvanilla.simplyrank.data;
 
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,9 +37,14 @@ public class PermissionApplyService {
                 return;
             }
 
-            // We have to run this on the thread of the player, otherwise it will not work properly
-            player.getScheduler().run(this.javaPlugin, (task) -> this.applyPermission(player, playerData), () -> {
-            });
+            // We have to check if the server is running folia because paper doesn't support player based schedulers.
+            if (SimplyRankPlugin.isFolia()) {
+                // We have to run this on the thread of the player, otherwise it will not work properly
+                player.getScheduler().run(this.javaPlugin, (task) -> this.applyPermission(player, playerData), () -> {
+                });
+            } else {
+                this.applyPermission(player, playerData);
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to load data for player {}", uuid, e);
         }

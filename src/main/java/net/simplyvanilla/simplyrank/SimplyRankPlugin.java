@@ -102,7 +102,7 @@ public class SimplyRankPlugin extends JavaPlugin {
                 new PlayerPermissionService(this, this.playerDataService);
             GroupPermissionService groupPermissionService = new GroupPermissionService();
             PermissionApplyService permissionApplyService =
-                new PermissionApplyService(this.playerDataService, playerPermissionService, groupPermissionService);
+                new PermissionApplyService(this, this.playerDataService, playerPermissionService, groupPermissionService);
 
             Set<String> keys = permsFile.getKeys(false);
 
@@ -182,6 +182,15 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         } catch (NullPointerException e) {
             throw new DatabaseConnectionFailException();
+        }
+    }
+
+    public static boolean isFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 }
