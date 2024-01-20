@@ -4,7 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroupPermissionManager {
+/**
+ * Service which handles the caching of group permissions.
+ */
+public class GroupPermissionService {
 
     private final Map<String, Map<String, Boolean>> permissionDataMap = new HashMap<>();
 

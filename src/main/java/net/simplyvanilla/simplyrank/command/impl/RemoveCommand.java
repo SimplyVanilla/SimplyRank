@@ -3,9 +3,9 @@ package net.simplyvanilla.simplyrank.command.impl;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.data.IOCallback;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.callback.IOCallback;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 
@@ -19,9 +19,9 @@ public class RemoveCommand extends AbstractCommand {
 
     public RemoveCommand(
         CommandErrorMessages errorMessages,
-        DataManager dataManager,
-        PermissionApplier permissionApplier) {
-        super(errorMessages, dataManager, permissionApplier);
+        PlayerDataService playerDataService,
+        PermissionApplyService permissionApplyService) {
+        super(errorMessages, playerDataService, permissionApplyService);
     }
 
     @Override
@@ -57,8 +57,8 @@ public class RemoveCommand extends AbstractCommand {
                 data.setGroups(groups);
 
                 // Next, replace the old data with the new one. Both asynchronous to save performance
-                dataManager.savePlayerDataAsync(
-                    uuid.toString(),
+                playerDataService.savePlayerDataAsync(
+                    uuid,
                     data,
                     new IOCallback<>() {
                         @Override
@@ -66,7 +66,7 @@ public class RemoveCommand extends AbstractCommand {
                             context.getSender().sendMessage(text("Group successfully removed!"));
 
                             Optional.ofNullable(Bukkit.getPlayer(uuid))
-                                .ifPresent(permissionApplier::apply);
+                                .ifPresent(permissionApplyService::apply);
                         }
 
                         @Override

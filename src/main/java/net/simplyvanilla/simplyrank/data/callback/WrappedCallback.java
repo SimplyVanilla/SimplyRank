@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.data.callback;
 
 import java.util.function.Consumer;
 

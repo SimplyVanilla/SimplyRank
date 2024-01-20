@@ -1,8 +1,8 @@
 package net.simplyvanilla.simplyrank.command;
 
 import net.simplyvanilla.simplyrank.command.impl.*;
-import net.simplyvanilla.simplyrank.data.DataManager;
-import net.simplyvanilla.simplyrank.utils.PermissionApplier;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,27 +13,27 @@ import java.util.Map;
 import static net.kyori.adventure.text.Component.text;
 
 public class SimplyRankCommandExecutor implements CommandExecutor {
-    private final DataManager dataManager;
-    private final PermissionApplier permissionApplier;
+    private final PlayerDataService playerDataService;
+    private final PermissionApplyService permissionApplyService;
     private final CommandErrorMessages errorMessages;
     private final Map<String, SubCommand> subCommandMap = new HashMap<>();
 
-    public SimplyRankCommandExecutor(DataManager dataManager, PermissionApplier permissionApplier) {
-        this.dataManager = dataManager;
-        this.permissionApplier = permissionApplier;
+    public SimplyRankCommandExecutor(PlayerDataService playerDataService, PermissionApplyService permissionApplyService) {
+        this.playerDataService = playerDataService;
+        this.permissionApplyService = permissionApplyService;
         this.errorMessages = new CommandErrorMessages();
 
         this.subCommandMap.put(
             "create",
-            new CreateGroupCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+            new CreateGroupCommand(this.errorMessages, this.playerDataService, this.permissionApplyService));
         this.subCommandMap.put(
-            "set", new SetCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+            "set", new SetCommand(this.errorMessages, this.playerDataService, this.permissionApplyService));
         this.subCommandMap.put(
-            "add", new AddCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+            "add", new AddCommand(this.errorMessages, this.playerDataService, this.permissionApplyService));
         this.subCommandMap.put(
-            "rem", new RemoveCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+            "rem", new RemoveCommand(this.errorMessages, this.playerDataService, this.permissionApplyService));
         this.subCommandMap.put(
-            "get", new GetCommand(this.errorMessages, this.dataManager, this.permissionApplier));
+            "get", new GetCommand(this.errorMessages, this.playerDataService, this.permissionApplyService));
     }
 
     @Override

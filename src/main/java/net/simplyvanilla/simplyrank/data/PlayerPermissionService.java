@@ -8,16 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class PlayerPermissionManager {
+/**
+ * This service is responsible for managing the permissions of players.
+ */
+public class PlayerPermissionService {
 
     private final Map<UUID, PermissionAttachment> attachmentMap = new HashMap<>();
 
     private final Plugin plugin;
-    private final DataManager dataManager;
+    private final PlayerDataService playerDataService;
 
-    public PlayerPermissionManager(Plugin plugin, DataManager dataManager) {
+    public PlayerPermissionService(Plugin plugin, PlayerDataService playerDataService) {
         this.plugin = plugin;
-        this.dataManager = dataManager;
+        this.playerDataService = playerDataService;
     }
 
     public void setPermission(Player player, String name, boolean value) {
@@ -35,6 +38,6 @@ public class PlayerPermissionManager {
             player.removeAttachment(attachment);
         }
 
-        this.dataManager.invalidatePlayerData(player.getUniqueId());
+        this.playerDataService.invalidatePlayerData(player.getUniqueId());
     }
 }

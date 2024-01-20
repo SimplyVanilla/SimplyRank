@@ -1,8 +1,10 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.data.database.sql;
+
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 
 import java.sql.*;
 
-public class SQLHandler {
+public class MySqlClient {
 
     public static final String TABLE_PLAYERS_NAME = "player";
     public static final String TABLE_GROUPS_NAME = "group";
@@ -13,7 +15,7 @@ public class SQLHandler {
 
     private Connection connection;
 
-    public SQLHandler(String url, String user, String password) {
+    public MySqlClient(String url, String user, String password) {
         this.url = url;
         this.username = user;
         this.password = password;
@@ -26,7 +28,7 @@ public class SQLHandler {
         try {
             connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            e.printStackTrace();
+            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not connect to MySQL database", e);
         }
     }
 
@@ -34,7 +36,7 @@ public class SQLHandler {
         try {
             if (connection != null) connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not close MySQL connection", e);
         }
     }
 
@@ -92,7 +94,7 @@ public class SQLHandler {
             executeRawStatement(cmdPlayers);
             executeRawStatement(cmdGroups);
         } catch (SQLException e) {
-            e.printStackTrace();
+            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not create tables", e);
         }
     }
 
