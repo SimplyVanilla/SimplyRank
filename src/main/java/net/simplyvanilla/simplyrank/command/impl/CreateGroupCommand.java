@@ -47,17 +47,21 @@ public class CreateGroupCommand extends AbstractCommand {
                         .collect(Collectors.joining(" "));
             }
 
-            GroupData groupData = new GroupData(color, prefix);
-            try {
-                this.playerDataService.saveGroupData(
-                    name,
-                    groupData);
-                context.getSender().sendMessage(text("Successfully created the group!"));
-            } catch (Exception e) {
-                context.getSender().sendMessage(text("An error occurred!"));
-            }
+            this.createGroupData(context, name, color, prefix);
         } catch (IllegalArgumentException e) {
             context.getSender().sendMessage(text(this.errorMessages.colorDoesNotExistError()));
+        }
+    }
+
+    private void createGroupData(CommandContext context, String name, TextColor color, String prefix) {
+        GroupData groupData = new GroupData(color, prefix);
+        try {
+            this.playerDataService.saveGroupData(
+                name,
+                groupData);
+            context.getSender().sendMessage(text("Successfully created the group!"));
+        } catch (Exception e) {
+            context.getSender().sendMessage(text("An error occurred!"));
         }
     }
 }

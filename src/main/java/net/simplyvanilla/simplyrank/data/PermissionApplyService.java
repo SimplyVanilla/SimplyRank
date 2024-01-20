@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 public class PermissionApplyService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(PermissionApplyService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PermissionApplyService.class);
 
     private final JavaPlugin javaPlugin;
     private final PlayerDataService playerDataService;
@@ -40,7 +40,7 @@ public class PermissionApplyService {
             // We have to check if the server is running folia because paper doesn't support player based schedulers.
             if (SimplyRankPlugin.isFolia()) {
                 // We have to run this on the thread of the player, otherwise it will not work properly
-                player.getScheduler().run(this.javaPlugin, (task) -> this.applyPermission(player, playerData), () -> {
+                player.getScheduler().run(this.javaPlugin, task -> this.applyPermission(player, playerData), () -> {
                 });
             } else {
                 this.applyPermission(player, playerData);
