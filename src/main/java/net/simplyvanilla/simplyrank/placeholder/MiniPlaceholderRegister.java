@@ -72,12 +72,12 @@ public class MiniPlaceholderRegister {
                 (audience, queue, ctx) -> {
                     Player player = (Player) audience;
                     TextColor color =
-                        plugin
+                        this.plugin
                             .getDataManager()
-                            .loadGroupDataSync(
-                                plugin
+                            .loadGroupData(
+                                this.plugin
                                     .getDataManager()
-                                    .loadPlayerDataSync(player.getUniqueId())
+                                    .loadPlayerData(player.getUniqueId())
                                     .getPrimaryGroup())
                             .getColor();
                     return Tag.styling(builder1 -> builder1.color(color));
@@ -88,12 +88,12 @@ public class MiniPlaceholderRegister {
                     Tag.inserting(
                         miniMessage()
                             .deserialize(
-                                plugin
+                                this.plugin
                                     .getDataManager()
-                                    .loadGroupDataSync(
-                                        plugin
+                                    .loadGroupData(
+                                        this.plugin
                                             .getDataManager()
-                                            .loadPlayerDataSync(((Player) audience).getUniqueId())
+                                            .loadPlayerData(((Player) audience).getUniqueId())
                                             .getPrimaryGroup())
                                     .getPrefix())))
             .audiencePlaceholder(
@@ -101,9 +101,9 @@ public class MiniPlaceholderRegister {
                 (audience, queue, ctx) ->
                     Tag.inserting(
                         Component.text(
-                            plugin
+                            this.plugin
                                 .getDataManager()
-                                .loadPlayerDataSync(((Player) audience).getUniqueId())
+                                .loadPlayerData(((Player) audience).getUniqueId())
                                 .getPrimaryGroup())));
 
         builder.build().register();

@@ -64,7 +64,7 @@ class PermissionApplyServiceTest {
         UUID uniqueId = player.getUniqueId();
         this.playerDataRepository.save(uniqueId, new PlayerData(List.of("admin")));
 
-        PlayerData playerData = this.playerDataService.loadPlayerDataSync(uniqueId);
+        PlayerData playerData = this.playerDataService.loadPlayerData(uniqueId);
         Assertions.assertEquals("admin", playerData.getPrimaryGroup());
 
         try {
@@ -86,7 +86,7 @@ class PermissionApplyServiceTest {
         PlayerMock player = this.server.addPlayer();
         UUID uniqueId = player.getUniqueId();
 
-        PlayerData playerData = this.playerDataService.loadPlayerDataSync(uniqueId);
+        PlayerData playerData = this.playerDataService.loadPlayerData(uniqueId);
         Assertions.assertEquals("default", playerData.getPrimaryGroup());
 
         try {
@@ -108,15 +108,6 @@ class PermissionApplyServiceTest {
         PlayerMock player = this.server.addPlayer();
 
         this.permissionApplyService.apply(player);
-        Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> {
-            try {
-                this.server.getScheduler().performOneTick();
-                return false;
-            } catch (UnimplementedOperationException ignored) {
-//            // this error comes because updateCommands is not implemented in MockBukkit
-                return true;
-            }
-        });
 
         Assertions.assertFalse(player.hasPermission("test.permission"));
         Assertions.assertTrue(player.hasPermission("test.permission2"));
@@ -128,14 +119,16 @@ class PermissionApplyServiceTest {
         this.groupPermissionService.setPermission("admin", "test.permission", true);
         this.groupPermissionService.setPermission("default", "test.permission2", true);
 
-        this.server.getPluginManager().registerEvents(new PlayerLoginEventListener(this.permissionApplyService), this.plugin);
+        this.server.getPluginManager().registerEvents(new PlayerLoginEventListener(this.plugin, this.permissionApplyService), this.plugin);
 
-        PlayerMock player = this.server.addPlayer();
+        PlayerMock player = new PlayerMock(this.server, "MockPlayer", UUID.randomUUID());
+        this.server.addPlayer(player);
+
 
         Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> {
             try {
                 this.server.getScheduler().performOneTick();
-                return false;
+                return player.hasPermission("test.permission2");
             } catch (UnimplementedOperationException ignored) {
 //            // this error comes because updateCommands is not implemented in MockBukkit
                 return true;
@@ -152,15 +145,18 @@ class PermissionApplyServiceTest {
         this.groupPermissionService.setPermission("admin", "test.permission", true);
         this.groupPermissionService.setPermission("default", "test.permission2", true);
 
-        this.server.getPluginManager().registerEvents(new PlayerLoginEventListener(this.permissionApplyService), this.plugin);
+        this.server.getPluginManager().registerEvents(new PlayerLoginEventListener(this.plugin, this.permissionApplyService), this.plugin);
 
-        PlayerMock player = this.server.addPlayer();
-        this.playerDataRepository.save(player.getUniqueId(), new PlayerData(List.of("admin")));
+        UUID playerId = UUID.randomUUID();
+        this.playerDataRepository.save(playerId, new PlayerData(List.of("admin")));
+        PlayerMock player = new PlayerMock(this.server, "MockPlayer", playerId);
+        this.server.addPlayer(player);
+
 
         Awaitility.await().atMost(2, TimeUnit.SECONDS).until(() -> {
             try {
                 this.server.getScheduler().performOneTick();
-                return false;
+                return player.hasPermission("test.permission");
             } catch (UnimplementedOperationException ignored) {
 //            // this error comes because updateCommands is not implemented in MockBukkit
                 return true;

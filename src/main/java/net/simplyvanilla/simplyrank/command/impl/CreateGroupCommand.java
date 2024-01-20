@@ -5,10 +5,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.data.PlayerDataService;
 import net.simplyvanilla.simplyrank.data.database.group.GroupData;
-import net.simplyvanilla.simplyrank.data.callback.WrappedCallback;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -28,7 +27,7 @@ public class CreateGroupCommand extends AbstractCommand {
     @Override
     public void execute(CommandContext context) {
         if (context.getArguments().length < 3) {
-            context.getSender().sendMessage(text(errorMessages.createCommandFormatError()));
+            context.getSender().sendMessage(text(this.errorMessages.createCommandFormatError()));
             return;
         }
 
@@ -36,7 +35,7 @@ public class CreateGroupCommand extends AbstractCommand {
         try {
             TextColor color = NamedTextColor.NAMES.value(context.getArgument(2).toLowerCase(Locale.ROOT));
 
-            if (playerDataService.groupExists(name)) {
+            if (this.playerDataService.groupExists(name)) {
                 context.getSender().sendMessage(text("That group does already exist."));
                 return;
             }
@@ -49,14 +48,16 @@ public class CreateGroupCommand extends AbstractCommand {
             }
 
             GroupData groupData = new GroupData(color, prefix);
-            playerDataService.saveGroupDataAsync(
-                name,
-                groupData,
-                WrappedCallback.wrap(
-                    o -> context.getSender().sendMessage(text("Successfully created the group!")),
-                    e -> context.getSender().sendMessage(text("An error occurred!"))));
+            try {
+                this.playerDataService.saveGroupData(
+                    name,
+                    groupData);
+                context.getSender().sendMessage(text("Successfully created the group!"));
+            } catch (Exception e) {
+                context.getSender().sendMessage(text("An error occurred!"));
+            }
         } catch (IllegalArgumentException e) {
-            context.getSender().sendMessage(text(errorMessages.colorDoesNotExistError()));
+            context.getSender().sendMessage(text(this.errorMessages.colorDoesNotExistError()));
         }
     }
 }

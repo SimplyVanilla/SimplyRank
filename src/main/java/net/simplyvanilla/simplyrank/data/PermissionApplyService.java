@@ -1,13 +1,14 @@
 package net.simplyvanilla.simplyrank.data;
 
-import net.simplyvanilla.simplyrank.data.callback.IOCallback;
 import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
 public class PermissionApplyService {
+    private final static Logger LOGGER = LoggerFactory.getLogger(PermissionApplyService.class);
 
     private final PlayerDataService playerDataService;
     private final PlayerPermissionService playerPermissionService;
@@ -23,41 +24,26 @@ public class PermissionApplyService {
     }
 
     public void apply(Player player) {
-        this.apply(player, () -> {
-        });
-    }
-
-    public void apply(Player player, Runnable callback) {
         UUID uuid = player.getUniqueId();
-        playerDataService.loadPlayerDataAsync(
-            uuid,
-            new IOCallback<>() {
-                @Override
-                public void success(PlayerData data) {
-                    Player player = Bukkit.getPlayer(uuid);
+        try {
+            PlayerData playerData = this.playerDataService.loadPlayerData(uuid);
 
-                    if (player == null || data == null) {
-                        callback.run();
-                        return;
-                    }
-                    applyPermission(player, data);
-                    callback.run();
-                }
+            if (playerData == null) {
+                return;
+            }
 
-                @Override
-                public void error(Exception error) {
-                    // No important erros here
-                    callback.run();
-                }
-            });
+            this.applyPermission(player, playerData);
+        } catch (Exception e) {
+            LOGGER.error("Failed to load data for player {}", uuid, e);
+        }
     }
 
     public void applyPermission(Player player, PlayerData data) {
         String group = data.getPrimaryGroup();
-        playerPermissionService.clear(player);
-        groupPermissionService
+        this.playerPermissionService.clear(player);
+        this.groupPermissionService
             .getPermissions(group)
-            .forEach((k, v) -> playerPermissionService.setPermission(player, k, v));
+            .forEach((k, v) -> this.playerPermissionService.setPermission(player, k, v));
 
         player.recalculatePermissions();
         player.updateCommands();
