@@ -3,9 +3,8 @@ package net.simplyvanilla.simplyrank.command.impl;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.callback.IOCallback;
 import net.simplyvanilla.simplyrank.data.PermissionApplyService;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 
@@ -27,12 +26,12 @@ public class RemoveCommand extends AbstractCommand {
     @Override
     public void execute(CommandContext context) {
         if (context.getArguments().length != 3) {
-            context.getSender().sendMessage(text(errorMessages.remCommandFormatError()));
+            context.getSender().sendMessage(text(this.errorMessages.remCommandFormatError()));
             return;
         }
         UUID uuid = PlayerUtils.resolveUuid(context.getArgument(1));
         if (uuid == null) {
-            context.getSender().sendMessage(text(errorMessages.cannotFindPlayerError()));
+            context.getSender().sendMessage(text(this.errorMessages.cannotFindPlayerError()));
             return;
         }
 
@@ -57,23 +56,19 @@ public class RemoveCommand extends AbstractCommand {
                 data.setGroups(groups);
 
                 // Next, replace the old data with the new one. Both asynchronous to save performance
-                playerDataService.savePlayerDataAsync(
-                    uuid,
-                    data,
-                    new IOCallback<>() {
-                        @Override
-                        public void success(Void data) {
-                            context.getSender().sendMessage(text("Group successfully removed!"));
+                try {
+                    this.playerDataService.savePlayerData(
+                        uuid,
+                        data);
 
-                            Optional.ofNullable(Bukkit.getPlayer(uuid))
-                                .ifPresent(permissionApplyService::apply);
-                        }
+                    context.getSender().sendMessage(text("Group successfully removed!"));
 
-                        @Override
-                        public void error(Exception error) {
-                            context.getSender().sendMessage(text("Could not remove group!"));
-                        }
-                    });
+                    Optional.ofNullable(Bukkit.getPlayer(uuid))
+                        .ifPresent(this.permissionApplyService::apply);
+
+                } catch (Exception e) {
+                    context.getSender().sendMessage(text("Could not remove group!"));
+                }
             });
     }
 }

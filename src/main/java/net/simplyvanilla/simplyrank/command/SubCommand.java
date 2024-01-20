@@ -1,17 +1,13 @@
 package net.simplyvanilla.simplyrank.command;
 
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.data.PlayerDataService;
 import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
-import net.simplyvanilla.simplyrank.data.callback.WrappedCallback;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.FileNotFoundException;
-import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -32,26 +28,20 @@ public interface SubCommand {
         final UUID uuid = PlayerUtils.resolveUuid(input);
 
         if (uuid == null) {
-            context.getSender().sendMessage(text(getErrorMessages().cannotFindPlayerError()));
+            context.getSender().sendMessage(text(this.getErrorMessages().cannotFindPlayerError()));
             return;
         }
 
-        if (!getDataManager().groupExists(group)) {
+        if (!this.getDataManager().groupExists(group)) {
             context.getSender().sendMessage(text("That group does not exist!"));
             return;
         }
 
-        getDataManager()
-            .loadPlayerDataAsync(
-                uuid,
-                WrappedCallback.wrap(
-                    action,
-                    exception -> {
-                        if (exception instanceof FileNotFoundException
-                            || exception instanceof NoSuchFileException) {
-                            action.accept(new PlayerData(new ArrayList<>()));
-                        }
-                    }));
+        try {
+            action.accept(this.getDataManager().loadPlayerData(uuid));
+        } catch (Exception exception) {
+            context.getSender().sendMessage(text("Could not load player data"));
+        }
     }
 
     default void coreSetCommandHandler(
@@ -76,21 +66,23 @@ public interface SubCommand {
         }
 
         data.setGroups(groups);
-        getDataManager()
-            .savePlayerDataAsync(
-                uuid,
-                data,
-                WrappedCallback.wrap(
-                    unused -> {
-                        sender.sendMessage(text("Successfully saved"));
+        try {
+            this.getDataManager()
+                .savePlayerData(
+                    uuid,
+                    data);
 
-                        Player player = Bukkit.getPlayer(uuid);
+            sender.sendMessage(text("Successfully saved"));
 
-                        if (player != null) {
-                            getPermissionApplier().apply(player);
-                        }
-                    },
-                    exception -> sender.sendMessage(text("Saving failed"))));
+            Player player = Bukkit.getPlayer(uuid);
+
+            if (player != null) {
+                this.getPermissionApplier().apply(player);
+            }
+
+        } catch (Exception e) {
+            sender.sendMessage(text("Saving failed"));
+        }
     }
 
     default void coreAddCommandHandler(
@@ -109,20 +101,22 @@ public interface SubCommand {
 
         groups.add(group);
         groups.remove("default");
-        getDataManager()
-            .savePlayerDataAsync(
-                uuid,
-                data,
-                WrappedCallback.wrap(
-                    unused -> {
-                        sender.sendMessage(text("Sucessfully saved"));
+        try {
+            this.getDataManager()
+                .savePlayerData(
+                    uuid,
+                    data);
 
-                        Player player = Bukkit.getPlayer(uuid);
+            sender.sendMessage(text("Sucessfully saved"));
 
-                        if (player != null) {
-                            getPermissionApplier().apply(player);
-                        }
-                    },
-                    exception -> sender.sendMessage(text("Saving failed"))));
+            Player player = Bukkit.getPlayer(uuid);
+
+            if (player != null) {
+                this.getPermissionApplier().apply(player);
+            }
+
+        } catch (Exception e) {
+            sender.sendMessage(text("Saving failed"));
+        }
     }
 }

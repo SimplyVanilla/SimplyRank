@@ -37,7 +37,7 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public boolean canRegister() {
-        return (plugin = (SimplyRankPlugin) Bukkit.getPluginManager().getPlugin(getRequiredPlugin()))
+        return (this.plugin = (SimplyRankPlugin) Bukkit.getPluginManager().getPlugin(getRequiredPlugin()))
             != null;
     }
 
@@ -45,20 +45,20 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
     public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
         // Can't use async in placeholder api
         if (params.equals("name_color")) {
-            return plugin
+            return this.plugin
                 .getDataManager()
-                .loadGroupDataSync(
-                    plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup())
+                .loadGroupData(
+                    this.plugin.getDataManager().loadPlayerData(player.getUniqueId()).getPrimaryGroup())
                 .getColor()
                 .asHexString();
         } else if (params.equals("code_color")) {
             return ChatColor.of(
-                    plugin
+                    this.plugin
                         .getDataManager()
-                        .loadGroupDataSync(
-                            plugin
+                        .loadGroupData(
+                            this.plugin
                                 .getDataManager()
-                                .loadPlayerDataSync(player.getUniqueId())
+                                .loadPlayerData(player.getUniqueId())
                                 .getPrimaryGroup())
                         .getColor()
                         .asHexString())
@@ -68,16 +68,16 @@ public class SimplyRankPlaceholderExpansion extends PlaceholderExpansion {
                 .serialize(
                     miniMessage()
                         .deserialize(
-                            plugin
+                            this.plugin
                                 .getDataManager()
-                                .loadGroupDataSync(
-                                    plugin
+                                .loadGroupData(
+                                    this.plugin
                                         .getDataManager()
-                                        .loadPlayerDataSync(player.getUniqueId())
+                                        .loadPlayerData(player.getUniqueId())
                                         .getPrimaryGroup())
                                 .getPrefix()));
         } else if (params.equals("primary_rank")) {
-            return plugin.getDataManager().loadPlayerDataSync(player.getUniqueId()).getPrimaryGroup();
+            return this.plugin.getDataManager().loadPlayerData(player.getUniqueId()).getPrimaryGroup();
         }
         return null;
     }

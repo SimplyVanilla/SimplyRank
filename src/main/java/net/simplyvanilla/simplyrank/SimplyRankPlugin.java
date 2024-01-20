@@ -7,9 +7,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
 import net.simplyvanilla.simplyrank.data.GroupPermissionService;
+import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import net.simplyvanilla.simplyrank.data.PlayerDataService;
 import net.simplyvanilla.simplyrank.data.PlayerPermissionService;
-import net.simplyvanilla.simplyrank.data.callback.IOCallback;
 import net.simplyvanilla.simplyrank.data.database.group.GroupData;
 import net.simplyvanilla.simplyrank.data.database.sql.MySqlClient;
 import net.simplyvanilla.simplyrank.data.database.sql.MySqlRepository;
@@ -20,7 +20,6 @@ import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -47,22 +46,22 @@ public class SimplyRankPlugin extends JavaPlugin {
         instance = this;
 
         try {
-            config = loadConfig("config.yml");
+            config = this.loadConfig("config.yml");
         } catch (IOException e) {
             e.printStackTrace();
-            getLogger().log(Level.SEVERE, "Could not load config file! Disabling plugin...");
-            getServer().getPluginManager().disablePlugin(this);
+            this.getLogger().log(Level.SEVERE, "Could not load config file! Disabling plugin...");
+            this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         try {
-            mySqlClient = createSQLHandlerFromConfig(config);
+            this.mySqlClient = this.createSQLHandlerFromConfig(config);
         } catch (NullPointerException e) {
-            getLogger()
+            this.getLogger()
                 .log(
                     Level.SEVERE,
                     "Could not establish connection to database. Presumably, there are credentials missing!");
-            getServer().getPluginManager().disablePlugin(this);
+            this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
@@ -74,42 +73,36 @@ public class SimplyRankPlugin extends JavaPlugin {
                     }.getType(), new TextColorGsonDeserializer())
                 .create();
 
-        mySqlRepository = new MySqlRepository(mySqlClient, gson);
+        mySqlRepository = new MySqlRepository(this.mySqlClient, gson);
 
-        File dataFolder = getDataFolder();
+        File dataFolder = this.getDataFolder();
 
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
 
-        playerDataService =
+        this.playerDataService =
             new PlayerDataService(this, mySqlRepository, mySqlRepository);
 
-        if (!playerDataService.groupExists("default")) {
+        if (!this.playerDataService.groupExists("default")) {
             GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
-            playerDataService.saveGroupDataAsync(
-                "default",
-                defaultData,
-                new IOCallback<>() {
-                    @Override
-                    public void success(Void data) {
-                        getLogger().info("Successfully created default group!");
-                    }
-
-                    @Override
-                    public void error(Exception error) {
-                        getLogger().info("There was an error creating the default group");
-                    }
-                });
+            try {
+                this.playerDataService.saveGroupData(
+                    "default",
+                    defaultData);
+                this.getLogger().info("Successfully created default group!");
+            } catch (Exception e) {
+                this.getSLF4JLogger().info("There was an error creating the default group", e);
+            }
         }
 
         try {
-            FileConfiguration permsFile = loadConfig("perms.yml");
+            FileConfiguration permsFile = this.loadConfig("perms.yml");
             PlayerPermissionService playerPermissionService =
                 new PlayerPermissionService(this, this.playerDataService);
             GroupPermissionService groupPermissionService = new GroupPermissionService();
             PermissionApplyService permissionApplyService =
-                new PermissionApplyService(playerDataService, playerPermissionService, groupPermissionService);
+                new PermissionApplyService(this, this.playerDataService, playerPermissionService, groupPermissionService);
 
             Set<String> keys = permsFile.getKeys(false);
 
@@ -125,21 +118,21 @@ public class SimplyRankPlugin extends JavaPlugin {
                     });
             }
 
-            getServer()
+            this.getServer()
                 .getPluginManager()
                 .registerEvents(new PlayerQuitEventListener(playerPermissionService), this);
-            getServer()
+            this.getServer()
                 .getPluginManager()
-                .registerEvents(new PlayerLoginEventListener(permissionApplyService), this);
+                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService), this);
 
-            getCommand("simplyrank")
-                .setExecutor(new SimplyRankCommandExecutor(playerDataService, permissionApplyService));
+            this.getCommand("simplyrank")
+                .setExecutor(new SimplyRankCommandExecutor(this.playerDataService, permissionApplyService));
         } catch (IOException e) {
-            getLogger().severe("Could not load perms.yml");
+            this.getLogger().severe("Could not load perms.yml");
             e.printStackTrace();
         }
 
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (this.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new SimplyRankPlaceholderExpansion().register();
             new ScoreboardTeamsPlaceholderExtension().register();
             new MiniPlaceholderRegister(this).register();
@@ -149,13 +142,13 @@ public class SimplyRankPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
-        if (mySqlClient != null) {
-            mySqlClient.close();
+        if (this.mySqlClient != null) {
+            this.mySqlClient.close();
         }
     }
 
     public PlayerDataService getDataManager() {
-        return playerDataService;
+        return this.playerDataService;
     }
 
     public static SimplyRankPlugin getInstance() {
@@ -163,7 +156,7 @@ public class SimplyRankPlugin extends JavaPlugin {
     }
 
     private FileConfiguration loadConfig(String name) throws IOException {
-        File dataFolder = getDataFolder();
+        File dataFolder = this.getDataFolder();
 
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
@@ -172,7 +165,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         File configFile = new File(dataFolder, name);
 
         if (!configFile.exists()) {
-            Files.copy(getClassLoader().getResourceAsStream(name), configFile.toPath());
+            Files.copy(this.getClassLoader().getResourceAsStream(name), configFile.toPath());
         }
 
         return YamlConfiguration.loadConfiguration(configFile);
@@ -189,6 +182,15 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         } catch (NullPointerException e) {
             throw new DatabaseConnectionFailException();
+        }
+    }
+
+    public static boolean isFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 }

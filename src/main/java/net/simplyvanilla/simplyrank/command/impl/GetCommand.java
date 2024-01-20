@@ -3,10 +3,9 @@ package net.simplyvanilla.simplyrank.command.impl;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.callback.IOCallback;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.data.PermissionApplyService;
+import net.simplyvanilla.simplyrank.data.PlayerDataService;
+import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 
 import java.util.UUID;
@@ -38,26 +37,21 @@ public class GetCommand extends AbstractCommand {
             return;
         }
 
-        playerDataService.loadPlayerDataAsync(
-            uuid,
-            new IOCallback<>() {
-                @Override
-                public void success(PlayerData data) {
-                    context
-                        .getSender()
-                        .sendMessage(
-                            text(
-                                "Groups from "
-                                    + input
-                                    + ": ["
-                                    + String.join(", ", data.getGroups())
-                                    + "]"));
-                }
+        try {
+            PlayerData playerData = playerDataService.loadPlayerData(
+                uuid);
 
-                @Override
-                public void error(Exception error) {
-                    context.getSender().sendMessage(text("Could not load player data"));
-                }
-            });
+            context
+                .getSender()
+                .sendMessage(
+                    text(
+                        "Groups from "
+                            + input
+                            + ": ["
+                            + String.join(", ", playerData.getGroups())
+                            + "]"));
+        } catch (Exception e) {
+            context.getSender().sendMessage(text("Could not load player data"));
+        }
     }
 }
