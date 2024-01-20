@@ -2,6 +2,7 @@ package net.simplyvanilla.simplyrank.data;
 
 import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,14 +11,17 @@ import java.util.UUID;
 public class PermissionApplyService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PermissionApplyService.class);
 
+    private final JavaPlugin javaPlugin;
     private final PlayerDataService playerDataService;
     private final PlayerPermissionService playerPermissionService;
     private final GroupPermissionService groupPermissionService;
 
     public PermissionApplyService(
+        JavaPlugin javaPlugin,
         PlayerDataService playerDataService,
         PlayerPermissionService playerPermissionService,
         GroupPermissionService groupPermissionService) {
+        this.javaPlugin = javaPlugin;
         this.playerDataService = playerDataService;
         this.playerPermissionService = playerPermissionService;
         this.groupPermissionService = groupPermissionService;
@@ -32,7 +36,9 @@ public class PermissionApplyService {
                 return;
             }
 
-            this.applyPermission(player, playerData);
+            // We have to run this on the thread of the player, otherwise it will not work properly
+            player.getScheduler().run(this.javaPlugin, (task) -> this.applyPermission(player, playerData), () -> {
+            });
         } catch (Exception e) {
             LOGGER.error("Failed to load data for player {}", uuid, e);
         }
