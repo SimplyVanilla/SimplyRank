@@ -90,9 +90,23 @@ public class MySqlClient {
                     """,
                 TABLE_GROUPS_NAME);
 
+        // table has id, address, type, proxy, fetched_at
+        String proxyCacheTable = """
+                CREATE TABLE IF NOT EXISTS `proxy_cache` (
+                    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    `address` VARCHAR(255) NOT NULL,
+                    `type` VARCHAR(255) NOT NULL,
+                    `proxy` TINYINT(1) NOT NULL,
+                    `fetched_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (`id`),
+                    UNIQUE KEY `address` (`address`)
+                )
+            """;
+
         try {
             executeRawStatement(cmdPlayers);
             executeRawStatement(cmdGroups);
+            executeRawStatement(proxyCacheTable);
         } catch (SQLException e) {
             SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not create tables", e);
         }

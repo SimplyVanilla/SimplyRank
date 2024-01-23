@@ -6,20 +6,22 @@ import com.google.gson.GsonBuilder;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
+import net.simplyvanilla.simplyrank.database.exception.DatabaseConnectionFailException;
+import net.simplyvanilla.simplyrank.database.group.GroupData;
+import net.simplyvanilla.simplyrank.database.sql.MySqlClient;
+import net.simplyvanilla.simplyrank.database.sql.MySqlRepository;
+import net.simplyvanilla.simplyrank.gson.TextColorGsonDeserializer;
+import net.simplyvanilla.simplyrank.listener.PlayerLoginEventListener;
+import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.permission.GroupPermissionService;
 import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
 import net.simplyvanilla.simplyrank.permission.PlayerDataService;
 import net.simplyvanilla.simplyrank.permission.PlayerPermissionService;
-import net.simplyvanilla.simplyrank.database.group.GroupData;
-import net.simplyvanilla.simplyrank.database.sql.MySqlClient;
-import net.simplyvanilla.simplyrank.database.sql.MySqlRepository;
-import net.simplyvanilla.simplyrank.database.exception.DatabaseConnectionFailException;
-import net.simplyvanilla.simplyrank.gson.TextColorGsonDeserializer;
-import net.simplyvanilla.simplyrank.listener.PlayerLoginEventListener;
-import net.simplyvanilla.simplyrank.listener.PlayerQuitEventListener;
 import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
+import net.simplyvanilla.simplyrank.proxy.ProxyService;
+import net.simplyvanilla.simplyrank.proxy.provider.ProxyCheckProvider;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -36,6 +38,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
     private static SimplyRankPlugin instance;
     private PlayerDataService playerDataService;
+    private ProxyService proxyService;
     private MySqlClient mySqlClient = null;
 
 
@@ -83,6 +86,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         this.playerDataService =
             new PlayerDataService(this, mySqlRepository, mySqlRepository);
+        this.proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider());
 
         if (!this.playerDataService.groupExists("default")) {
             GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
@@ -123,7 +127,7 @@ public class SimplyRankPlugin extends JavaPlugin {
                 .registerEvents(new PlayerQuitEventListener(playerPermissionService), this);
             this.getServer()
                 .getPluginManager()
-                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService), this);
+                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService, this.proxyService), this);
 
             this.getCommand("simplyrank")
                 .setExecutor(new SimplyRankCommandExecutor(this.playerDataService, permissionApplyService));

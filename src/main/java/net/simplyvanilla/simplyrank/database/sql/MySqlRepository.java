@@ -2,17 +2,20 @@ package net.simplyvanilla.simplyrank.database.sql;
 
 import com.google.gson.Gson;
 import net.simplyvanilla.simplyrank.database.group.GroupData;
-import net.simplyvanilla.simplyrank.database.sql.exceptions.MySqlStatementFailedException;
-import net.simplyvanilla.simplyrank.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.database.group.GroupRepository;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
+import net.simplyvanilla.simplyrank.database.proxycache.ProxyCacheRepository;
+import net.simplyvanilla.simplyrank.database.proxycache.ProxyData;
+import net.simplyvanilla.simplyrank.database.sql.exceptions.MySqlStatementFailedException;
+import net.simplyvanilla.simplyrank.proxy.provider.ProxyType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MySqlRepository implements PlayerDataRepository, GroupRepository {
+public class MySqlRepository implements PlayerDataRepository, GroupRepository, ProxyCacheRepository {
     /*
 
         All methods are synchronous, unless specified
@@ -111,6 +114,42 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository {
 
         try (ResultSet result = this.sql.query(this.sql.prepareStatement(qry, groupName))) {
             return result.next();
+        } catch (SQLException e) {
+            throw new MySqlStatementFailedException(e);
+        }
+    }
+
+    @Override
+    public Optional<ProxyData> findByAddress(String address) {
+        try (ResultSet result = this.sql.query(this.sql.prepareStatement("SELECT * FROM `proxy_cache` WHERE `address` = ?", address))) {
+            if (!result.next()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new ProxyData(
+                address,
+                ProxyType.valueOf(result.getString("type")),
+                result.getBoolean("proxy"),
+                result.getTimestamp("fetched_at").toLocalDateTime()
+            ));
+        } catch (SQLException e) {
+            throw new MySqlStatementFailedException(e);
+        }
+    }
+
+    @Override
+    public void insert(ProxyData proxyData) {
+        try {
+            var statement = this.sql.prepareStatement(
+                "INSERT INTO `proxy_cache` (`address`, `type`, `proxy`, `fetched_at`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE `type` = VALUES(`type`), `proxy` = VALUES(`proxy`), `fetched_at` = VALUES(`fetched_at`)"
+            );
+
+            statement.setString(1, proxyData.address());
+            statement.setString(2, proxyData.type().name());
+            statement.setBoolean(3, proxyData.proxy());
+            statement.setTimestamp(4, java.sql.Timestamp.valueOf(proxyData.fetchedAt()));
+
+            this.sql.update(statement);
         } catch (SQLException e) {
             throw new MySqlStatementFailedException(e);
         }
