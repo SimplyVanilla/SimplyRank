@@ -3,9 +3,9 @@ package net.simplyvanilla.simplyrank.command.impl;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
+import net.simplyvanilla.simplyrank.permission.PlayerDataService;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.utils.PlayerUtils;
 
 import java.util.UUID;

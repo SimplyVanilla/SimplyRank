@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data.database.group;
+package net.simplyvanilla.simplyrank.database.group;
 
 import net.kyori.adventure.text.format.TextColor;
 

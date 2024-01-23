@@ -1,9 +1,9 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.permission;
 
-import net.simplyvanilla.simplyrank.data.database.group.GroupData;
-import net.simplyvanilla.simplyrank.data.database.group.GroupRepository;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
+import net.simplyvanilla.simplyrank.database.group.GroupData;
+import net.simplyvanilla.simplyrank.database.group.GroupRepository;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;

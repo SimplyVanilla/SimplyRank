@@ -1,7 +1,7 @@
 package net.simplyvanilla.simplyrank.database;
 
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
 
 import java.util.HashMap;
 import java.util.Map;

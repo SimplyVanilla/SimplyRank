@@ -5,9 +5,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.command.AbstractCommand;
 import net.simplyvanilla.simplyrank.command.CommandContext;
 import net.simplyvanilla.simplyrank.command.CommandErrorMessages;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.database.group.GroupData;
+import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
+import net.simplyvanilla.simplyrank.permission.PlayerDataService;
+import net.simplyvanilla.simplyrank.database.group.GroupData;
 
 import java.util.Arrays;
 import java.util.Locale;

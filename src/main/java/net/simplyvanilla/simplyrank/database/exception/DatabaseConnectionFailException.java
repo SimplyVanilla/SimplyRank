@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.exception;
+package net.simplyvanilla.simplyrank.database.exception;
 
 public class DatabaseConnectionFailException extends RuntimeException {
     public DatabaseConnectionFailException() {

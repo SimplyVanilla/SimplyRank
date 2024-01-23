@@ -1,8 +1,8 @@
 package net.simplyvanilla.simplyrank.command;
 
 import net.simplyvanilla.simplyrank.command.impl.*;
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
+import net.simplyvanilla.simplyrank.permission.PlayerDataService;
+import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 

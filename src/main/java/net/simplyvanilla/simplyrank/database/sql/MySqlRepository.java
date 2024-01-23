@@ -1,11 +1,11 @@
-package net.simplyvanilla.simplyrank.data.database.sql;
+package net.simplyvanilla.simplyrank.database.sql;
 
 import com.google.gson.Gson;
-import net.simplyvanilla.simplyrank.data.database.group.GroupData;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
-import net.simplyvanilla.simplyrank.data.database.group.GroupRepository;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
-import net.simplyvanilla.simplyrank.data.database.sql.exceptions.MySqlStatementFailedException;
+import net.simplyvanilla.simplyrank.database.group.GroupData;
+import net.simplyvanilla.simplyrank.database.sql.exceptions.MySqlStatementFailedException;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.database.group.GroupRepository;
+import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

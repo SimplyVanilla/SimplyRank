@@ -1,7 +1,7 @@
 package net.simplyvanilla.simplyrank.listener;
 
 import net.kyori.adventure.text.Component;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
+import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

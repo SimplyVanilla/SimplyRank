@@ -1,6 +1,6 @@
 package net.simplyvanilla.simplyrank;
 
-import net.simplyvanilla.simplyrank.data.GroupPermissionService;
+import net.simplyvanilla.simplyrank.permission.GroupPermissionService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;

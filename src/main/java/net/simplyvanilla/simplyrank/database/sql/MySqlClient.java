@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data.database.sql;
+package net.simplyvanilla.simplyrank.database.sql;
 
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 

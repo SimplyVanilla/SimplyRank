@@ -1,7 +1,7 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.permission;
 
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
