@@ -12,12 +12,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ProxyCheckProvider implements ProxyProvider {
-    private static final String API_URL = "https://proxycheck.io/v2/%s&vpn=1";
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyCheckProvider.class);
 
+    private final String apiUrl;
     private final HttpClient client;
 
-    public ProxyCheckProvider() {
+    public ProxyCheckProvider(String apiUrl)
+    {
+        this.apiUrl = apiUrl;
         this.client = HttpClient.newHttpClient();
     }
 
@@ -25,7 +27,7 @@ public class ProxyCheckProvider implements ProxyProvider {
     public ProxyResult fetch(String address) {
         try {
             String response = this.client.send(HttpRequest.newBuilder()
-                .uri(URI.create(String.format(API_URL, address)))
+                .uri(URI.create(String.format(this.apiUrl, address)))
                 .GET()
                 .build(), HttpResponse.BodyHandlers.ofString()
             ).body();

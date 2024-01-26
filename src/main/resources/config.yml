@@ -7,3 +7,4 @@ database:
 
 # ttl for proxy cache in minutes
 proxycache-ttl: 720
+proxycheck-api-url: 'https://proxycheck.io/v2/%s&vpn=1'

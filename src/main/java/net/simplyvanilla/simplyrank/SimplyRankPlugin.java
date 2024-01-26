@@ -92,7 +92,7 @@ public class SimplyRankPlugin extends JavaPlugin {
 
         this.playerDataService =
             new PlayerDataService(mySqlRepository, mySqlRepository);
-        proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider());
+        proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider(this.getConfig().getString("proxycheck-api-url", "https://proxycheck.io/v2/%s&vpn=1")));
         Bukkit.getAsyncScheduler().runAtFixedRate(this, new ProxyTtlCleanupTask(proxyService, this.getConfig().getInt("proxycache-ttl", 720)), 1, 10, TimeUnit.SECONDS);
 
         if (!this.playerDataService.groupExists("default")) {
