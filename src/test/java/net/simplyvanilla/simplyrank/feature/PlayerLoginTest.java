@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerLoginTest {
+class PlayerLoginTest {
 
     private ServerMock server;
     private MockPlugin plugin;
@@ -54,7 +54,7 @@ public class PlayerLoginTest {
         this.plugin = MockBukkit.createMockPlugin();
         this.groupRepository = new GroupRepositoryMock();
         this.playerDataRepository = new PlayerDataRepositoryMock();
-        this.playerDataService = new PlayerDataService(this.plugin, this.groupRepository, this.playerDataRepository);
+        this.playerDataService = new PlayerDataService(this.groupRepository, this.playerDataRepository);
         this.playerPermissionService = new PlayerPermissionService(this.plugin, this.playerDataService);
         this.groupPermissionService = new GroupPermissionService();
         this.permissionApplyService = new PermissionApplyService(this.plugin, this.playerDataService, this.playerPermissionService, this.groupPermissionService);

@@ -58,9 +58,7 @@ public class PlayerLoginEventListener implements Listener {
             player.getScheduler().run(this.javaPlugin, scheduledTask -> player.kick(reason), () -> {
             });
         } else {
-            Bukkit.getScheduler().runTask(this.javaPlugin, () -> {
-                player.kick(reason);
-            });
+            Bukkit.getScheduler().runTask(this.javaPlugin, () -> player.kick(reason));
         }
     }
 }

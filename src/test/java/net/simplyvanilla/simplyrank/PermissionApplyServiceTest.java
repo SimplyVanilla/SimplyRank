@@ -40,7 +40,7 @@ class PermissionApplyServiceTest {
         this.plugin = MockBukkit.createMockPlugin();
         this.groupRepository = new GroupRepositoryMock();
         this.playerDataRepository = new PlayerDataRepositoryMock();
-        this.playerDataService = new PlayerDataService(this.plugin, this.groupRepository, this.playerDataRepository);
+        this.playerDataService = new PlayerDataService(this.groupRepository, this.playerDataRepository);
         this.playerPermissionService = new PlayerPermissionService(this.plugin, this.playerDataService);
         this.groupPermissionService = new GroupPermissionService();
         this.permissionApplyService = new PermissionApplyService(this.plugin, this.playerDataService, this.playerPermissionService, this.groupPermissionService);

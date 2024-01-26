@@ -33,7 +33,7 @@ class PlayerDataServiceTest {
         this.plugin = MockBukkit.createMockPlugin();
         this.groupRepository = new GroupRepositoryMock();
         this.playerDataRepository = new PlayerDataRepositoryMock();
-        this.service = new PlayerDataService(this.plugin, this.groupRepository, this.playerDataRepository);
+        this.service = new PlayerDataService(this.groupRepository, this.playerDataRepository);
     }
 
     @AfterEach

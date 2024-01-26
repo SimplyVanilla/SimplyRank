@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class ProxyServiceTest {
+class ProxyServiceTest {
 
     private ServerMock server;
     private ProxyCacheRepository proxyCacheRepository;

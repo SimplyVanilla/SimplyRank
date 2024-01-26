@@ -43,13 +43,14 @@ public class SimplyRankPlugin extends JavaPlugin {
 
     private static SimplyRankPlugin instance;
     private PlayerDataService playerDataService;
-    private ProxyService proxyService;
+
     private MySqlClient mySqlClient = null;
 
 
     @Override
     public void onEnable() {
-        MySqlRepository mySqlRepository = null;
+        ProxyService proxyService;
+        MySqlRepository mySqlRepository;
         FileConfiguration config;
         instance = this;
 
@@ -90,9 +91,9 @@ public class SimplyRankPlugin extends JavaPlugin {
         }
 
         this.playerDataService =
-            new PlayerDataService(this, mySqlRepository, mySqlRepository);
-        this.proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider());
-        Bukkit.getAsyncScheduler().runAtFixedRate(this, new ProxyTtlCleanupTask(this.proxyService, this.getConfig().getInt("proxycache-ttl", 720)), 1, 10, TimeUnit.SECONDS);
+            new PlayerDataService(mySqlRepository, mySqlRepository);
+        proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider());
+        Bukkit.getAsyncScheduler().runAtFixedRate(this, new ProxyTtlCleanupTask(proxyService, this.getConfig().getInt("proxycache-ttl", 720)), 1, 10, TimeUnit.SECONDS);
 
         if (!this.playerDataService.groupExists("default")) {
             GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
@@ -135,7 +136,7 @@ public class SimplyRankPlugin extends JavaPlugin {
                 .registerEvents(new PlayerQuitEventListener(playerPermissionService), this);
             this.getServer()
                 .getPluginManager()
-                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService, this.proxyService, addressWhitelistService), this);
+                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService, proxyService, addressWhitelistService), this);
 
             this.getCommand("simplyrank")
                 .setExecutor(new SimplyRankCommandExecutor(this.playerDataService, permissionApplyService));

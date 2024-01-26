@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
-public class AddressWhitelistServiceTest {
+class AddressWhitelistServiceTest {
     private ServerMock server;
     private AddressWhitelistRepository addressWhitelistRepository;
 
