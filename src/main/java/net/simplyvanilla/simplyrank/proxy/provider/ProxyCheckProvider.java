@@ -32,6 +32,7 @@ public class ProxyCheckProvider implements ProxyProvider {
 
             return this.parseResponse(response, address);
         } catch (IOException | InterruptedException e) {
+            Thread.currentThread().interrupt();
             LOGGER.error("Failed to fetch proxy type for address {}", address, e);
         }
 
