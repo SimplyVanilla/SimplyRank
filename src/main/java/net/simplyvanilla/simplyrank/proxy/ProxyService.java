@@ -29,7 +29,7 @@ public class ProxyService {
         return this.isVpn(proxyData);
     }
 
-    private boolean isVpn(ProxyData proxyData) {
+    public boolean isVpn(ProxyData proxyData) {
         return proxyData.type() == ProxyType.VPN || proxyData.proxy();
     }
 
@@ -40,5 +40,9 @@ public class ProxyService {
         var data = result.toData(addressOfPlayer);
         this.repository.insert(data);
         return data;
+    }
+
+    public void deleteExpiredEntries(int minutes) {
+        this.repository.deleteExpiredEntries(minutes);
     }
 }

@@ -7,4 +7,6 @@ public interface ProxyCacheRepository {
 
     void insert(ProxyData proxyData);
 
+    void deleteExpiredEntries(int minutes);
+
 }

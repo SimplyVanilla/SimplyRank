@@ -5,7 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.simplyvanilla.simplyrank.addresswhitelist.AddressWhitelistService;
 import net.simplyvanilla.simplyrank.command.SimplyRankCommandExecutor;
+import net.simplyvanilla.simplyrank.command.address.AddressWhitelistCommand;
 import net.simplyvanilla.simplyrank.database.exception.DatabaseConnectionFailException;
 import net.simplyvanilla.simplyrank.database.group.GroupData;
 import net.simplyvanilla.simplyrank.database.sql.MySqlClient;
@@ -21,7 +23,9 @@ import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
 import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
 import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import net.simplyvanilla.simplyrank.proxy.ProxyService;
+import net.simplyvanilla.simplyrank.proxy.ProxyTtlCleanupTask;
 import net.simplyvanilla.simplyrank.proxy.provider.ProxyCheckProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class SimplyRankPlugin extends JavaPlugin {
@@ -87,6 +92,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         this.playerDataService =
             new PlayerDataService(this, mySqlRepository, mySqlRepository);
         this.proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider());
+        Bukkit.getAsyncScheduler().runAtFixedRate(this, new ProxyTtlCleanupTask(this.proxyService, this.getConfig().getInt("proxycache-ttl", 720)), 1, 10, TimeUnit.SECONDS);
 
         if (!this.playerDataService.groupExists("default")) {
             GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
@@ -122,15 +128,20 @@ public class SimplyRankPlugin extends JavaPlugin {
                     });
             }
 
+            AddressWhitelistService addressWhitelistService = new AddressWhitelistService(mySqlRepository);
+
             this.getServer()
                 .getPluginManager()
                 .registerEvents(new PlayerQuitEventListener(playerPermissionService), this);
             this.getServer()
                 .getPluginManager()
-                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService, this.proxyService), this);
+                .registerEvents(new PlayerLoginEventListener(this, permissionApplyService, this.proxyService, addressWhitelistService), this);
 
             this.getCommand("simplyrank")
                 .setExecutor(new SimplyRankCommandExecutor(this.playerDataService, permissionApplyService));
+
+            this.getCommand("addresswhitelist")
+                .setExecutor(new AddressWhitelistCommand(addressWhitelistService));
         } catch (IOException e) {
             this.getLogger().severe("Could not load perms.yml");
             e.printStackTrace();

@@ -1,6 +1,8 @@
 package net.simplyvanilla.simplyrank.database.sql;
 
 import com.google.gson.Gson;
+import net.simplyvanilla.simplyrank.database.addresswhitelist.AddressWhitelist;
+import net.simplyvanilla.simplyrank.database.addresswhitelist.AddressWhitelistRepository;
 import net.simplyvanilla.simplyrank.database.group.GroupData;
 import net.simplyvanilla.simplyrank.database.group.GroupRepository;
 import net.simplyvanilla.simplyrank.database.player.PlayerData;
@@ -12,10 +14,11 @@ import net.simplyvanilla.simplyrank.proxy.provider.ProxyType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MySqlRepository implements PlayerDataRepository, GroupRepository, ProxyCacheRepository {
+public class MySqlRepository implements PlayerDataRepository, GroupRepository, ProxyCacheRepository, AddressWhitelistRepository {
     /*
 
         All methods are synchronous, unless specified
@@ -147,7 +150,59 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
             statement.setString(1, proxyData.address());
             statement.setString(2, proxyData.type().name());
             statement.setBoolean(3, proxyData.proxy());
-            statement.setTimestamp(4, java.sql.Timestamp.valueOf(proxyData.fetchedAt()));
+            statement.setTimestamp(4, Timestamp.valueOf(proxyData.fetchedAt()));
+
+            this.sql.update(statement);
+        } catch (SQLException e) {
+            throw new MySqlStatementFailedException(e);
+        }
+    }
+
+    @Override
+    public void deleteExpiredEntries(int minutes) {
+        try {
+            var statement = this.sql.prepareStatement("DELETE FROM `proxy_cache` WHERE `fetched_at` < DATE_SUB(NOW(), INTERVAL ? MINUTE)");
+
+            statement.setInt(1, minutes);
+
+            this.sql.update(statement);
+        } catch (SQLException e) {
+            throw new MySqlStatementFailedException(e);
+        }
+    }
+
+    @Override
+    public void save(AddressWhitelist addressWhitelist) {
+        try {
+            var statement = this.sql.prepareStatement(
+                "INSERT INTO `address_whitelist` (`address`, `invoker_id`, `created_at`) VALUES (?, UUID_TO_BIN(?), ?) ON DUPLICATE KEY UPDATE `invoker_id` = VALUES(`invoker_id`), `created_at` = VALUES(`created_at`)"
+            );
+
+            statement.setString(1, addressWhitelist.getAddress());
+            statement.setString(2, addressWhitelist.getInvokerId().toString());
+            statement.setTimestamp(3, Timestamp.valueOf(addressWhitelist.getCreatedAt()));
+
+            this.sql.update(statement);
+        } catch (SQLException e) {
+            throw new MySqlStatementFailedException(e);
+        }
+    }
+
+    @Override
+    public boolean existsByAddress(String address) {
+        try (ResultSet result = this.sql.query(this.sql.prepareStatement("SELECT * FROM `address_whitelist` WHERE `address` = ?", address))) {
+            return result.next();
+        } catch (SQLException e) {
+            throw new MySqlStatementFailedException(e);
+        }
+    }
+
+    @Override
+    public void deleteByAddress(String address) {
+        try {
+            var statement = this.sql.prepareStatement("DELETE FROM `address_whitelist` WHERE `address` = ?");
+
+            statement.setString(1, address);
 
             this.sql.update(statement);
         } catch (SQLException e) {

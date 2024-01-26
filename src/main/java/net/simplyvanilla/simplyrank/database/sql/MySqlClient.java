@@ -103,10 +103,23 @@ public class MySqlClient {
                 )
             """;
 
+        // table has id, address (unique), invoker_id, created_at
+        String addressWhitelistTable = """
+                CREATE TABLE IF NOT EXISTS `address_whitelist` (
+                    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    `address` VARCHAR(255) NOT NULL,
+                    `invoker_id` BINARY(16) NOT NULL,
+                    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (`id`),
+                    UNIQUE KEY `address` (`address`)
+                )
+            """;
+
         try {
             executeRawStatement(cmdPlayers);
             executeRawStatement(cmdGroups);
             executeRawStatement(proxyCacheTable);
+            executeRawStatement(addressWhitelistTable);
         } catch (SQLException e) {
             SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not create tables", e);
         }

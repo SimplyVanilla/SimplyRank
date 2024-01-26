@@ -1,6 +1,8 @@
 package net.simplyvanilla.simplyrank.listener;
 
 import net.kyori.adventure.text.Component;
+import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+import net.simplyvanilla.simplyrank.addresswhitelist.AddressWhitelistService;
 import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
 import net.simplyvanilla.simplyrank.proxy.ProxyService;
 import org.bukkit.Bukkit;
@@ -17,11 +19,13 @@ public class PlayerLoginEventListener implements Listener {
     private final JavaPlugin javaPlugin;
     private final PermissionApplyService permissionApplyService;
     private final ProxyService proxyService;
+    private final AddressWhitelistService addressWhitelistService;
 
-    public PlayerLoginEventListener(JavaPlugin javaPlugin, PermissionApplyService permissionApplyService, ProxyService proxyService) {
+    public PlayerLoginEventListener(JavaPlugin javaPlugin, PermissionApplyService permissionApplyService, ProxyService proxyService, AddressWhitelistService addressWhitelistService) {
         this.javaPlugin = javaPlugin;
         this.permissionApplyService = permissionApplyService;
         this.proxyService = proxyService;
+        this.addressWhitelistService = addressWhitelistService;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -37,16 +41,26 @@ public class PlayerLoginEventListener implements Listener {
         Bukkit.getAsyncScheduler().runNow(this.javaPlugin, (task) -> {
             this.permissionApplyService.apply(player);
 
-            if (!player.hasPermission("simplyrank.bypass.vpn") && this.proxyService.isDenied(player)) {
-                player.kick(Component.translatable("You are not allowed to join this server."));
+            if (!player.hasPermission("simplyrank.bypass.vpn") && !this.addressWhitelistService.isWhitelisted(player) && this.proxyService.isDenied(player)) {
+                this.kickPlayer(player, Component.translatable("You are not allowed to join this server."));
                 return;
             }
 
             if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers()
                 && !player.hasPermission("simplyrank.joinfullserver")) {
-                player.kick(Component.translatable("Server is full."));
+                this.kickPlayer(player, Component.translatable("Server is full."));
             }
         });
+    }
 
+    private void kickPlayer(Player player, Component reason) {
+        if (SimplyRankPlugin.isFolia()) {
+            player.getScheduler().run(this.javaPlugin, scheduledTask -> player.kick(reason), () -> {
+            });
+        } else {
+            Bukkit.getScheduler().runTask(this.javaPlugin, () -> {
+                player.kick(reason);
+            });
+        }
     }
 }

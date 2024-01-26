@@ -19,6 +19,12 @@ commands:
       /simplyrank get PLAYER - Get all ranks of a player.
       /simplyrank rem PLAYER RANK - Remove rank from a player.
     permission: simplyrank.manage
+  addresswhitelist:
+    description: Address whitelist management command
+    usage: |
+      /addresswhitelist add ADDRESS - Add an address to the whitelist.
+      /addresswhitelist remove ADDRESS - Remove an address from the whitelist.
+    permission: simplyrank.manage
 
 permissions:
   simplyrank.manage:
