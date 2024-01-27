@@ -124,7 +124,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
 
     @Override
     public Optional<ProxyData> findByAddress(String address) {
-        try (ResultSet result = this.sql.query(this.sql.prepareStatement("SELECT * FROM `proxy_cache` WHERE `address` = ?", address))) {
+        try (ResultSet result = this.sql.query(this.sql.prepareStatement("SELECT * FROM `proxy_cache` WHERE `address` = INET6_ATON(?)", address))) {
             if (!result.next()) {
                 return Optional.empty();
             }
@@ -144,7 +144,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
     public void insert(ProxyData proxyData) {
         try {
             var statement = this.sql.prepareStatement(
-                "INSERT INTO `proxy_cache` (`address`, `type`, `proxy`, `fetched_at`) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE `type` = VALUES(`type`), `proxy` = VALUES(`proxy`), `fetched_at` = VALUES(`fetched_at`)"
+                "INSERT INTO `proxy_cache` (`address`, `type`, `proxy`, `fetched_at`) VALUES (INET6_ATON(?), ?, ?, ?) ON DUPLICATE KEY UPDATE `type` = VALUES(`type`), `proxy` = VALUES(`proxy`), `fetched_at` = VALUES(`fetched_at`)"
             );
 
             statement.setString(1, proxyData.address());
@@ -175,7 +175,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
     public void save(AddressWhitelist addressWhitelist) {
         try {
             var statement = this.sql.prepareStatement(
-                "INSERT INTO `address_whitelist` (`address`, `invoker_id`, `created_at`) VALUES (?, UUID_TO_BIN(?), ?) ON DUPLICATE KEY UPDATE `invoker_id` = VALUES(`invoker_id`), `created_at` = VALUES(`created_at`)"
+                "INSERT INTO `address_whitelist` (`address`, `invoker_id`, `created_at`) VALUES (INET6_ATON(?), UUID_TO_BIN(?), ?) ON DUPLICATE KEY UPDATE `invoker_id` = VALUES(`invoker_id`), `created_at` = VALUES(`created_at`)"
             );
 
             statement.setString(1, addressWhitelist.getAddress());
@@ -190,7 +190,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
 
     @Override
     public boolean existsByAddress(String address) {
-        try (ResultSet result = this.sql.query(this.sql.prepareStatement("SELECT * FROM `address_whitelist` WHERE `address` = ?", address))) {
+        try (ResultSet result = this.sql.query(this.sql.prepareStatement("SELECT * FROM `address_whitelist` WHERE `address` = INET6_ATON(?)", address))) {
             return result.next();
         } catch (SQLException e) {
             throw new MySqlStatementFailedException(e);
@@ -200,7 +200,7 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
     @Override
     public void deleteByAddress(String address) {
         try {
-            var statement = this.sql.prepareStatement("DELETE FROM `address_whitelist` WHERE `address` = ?");
+            var statement = this.sql.prepareStatement("DELETE FROM `address_whitelist` WHERE `address` = INET6_ATON(?)");
 
             statement.setString(1, address);
 

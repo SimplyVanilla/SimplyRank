@@ -55,7 +55,7 @@ public class MySqlClient {
     }
 
     private void executeRawStatement(String cmd) throws SQLException {
-        try (Statement st = connection.createStatement();) {
+        try (Statement st = connection.createStatement()) {
             st.execute(cmd);
         }
     }
@@ -94,12 +94,13 @@ public class MySqlClient {
         String proxyCacheTable = """
                 CREATE TABLE IF NOT EXISTS `proxy_cache` (
                     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    `address` VARCHAR(255) NOT NULL,
+                    `address` VARBINARY(16) NOT NULL,
                     `type` VARCHAR(255) NOT NULL,
                     `proxy` TINYINT(1) NOT NULL,
                     `fetched_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (`id`),
-                    UNIQUE KEY `address` (`address`)
+                    UNIQUE KEY `address` (`address`),
+                    INDEX `fetched_at` (`fetched_at`)
                 )
             """;
 
@@ -107,7 +108,7 @@ public class MySqlClient {
         String addressWhitelistTable = """
                 CREATE TABLE IF NOT EXISTS `address_whitelist` (
                     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                    `address` VARCHAR(255) NOT NULL,
+                    `address` VARBINARY(16) NOT NULL,
                     `invoker_id` BINARY(16) NOT NULL,
                     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (`id`),

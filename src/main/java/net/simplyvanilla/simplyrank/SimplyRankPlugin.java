@@ -141,7 +141,7 @@ public class SimplyRankPlugin extends JavaPlugin {
             this.getCommand("simplyrank")
                 .setExecutor(new SimplyRankCommandExecutor(this.playerDataService, permissionApplyService));
 
-            this.getCommand("addresswhitelist")
+            this.getCommand("vpn-whitelist")
                 .setExecutor(new AddressWhitelistCommand(addressWhitelistService));
         } catch (IOException e) {
             this.getLogger().severe("Could not load perms.yml");

@@ -36,7 +36,7 @@ public class AddressWhitelistCommand implements CommandExecutor {
     }
 
     private void printHelp(CommandSender sender) {
-        sender.sendMessage(text("Usage: /addresswhitelist <add|remove> <address>"));
+        sender.sendMessage(text("Usage: /vpn-whitelist <add|remove> <address>"));
     }
 
     private boolean validateAddress(String address) {

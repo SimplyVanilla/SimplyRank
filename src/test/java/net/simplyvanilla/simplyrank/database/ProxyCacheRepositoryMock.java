@@ -25,6 +25,6 @@ public class ProxyCacheRepositoryMock implements ProxyCacheRepository {
 
     @Override
     public void deleteExpiredEntries(int minutes) {
-        this.values.removeIf(proxyData -> proxyData.fetchedAt().isBefore(LocalDateTime.now().minus(minutes, ChronoUnit.MINUTES)));
+        this.values.removeIf(proxyData -> proxyData.fetchedAt().isBefore(LocalDateTime.now().minusMinutes(minutes)));
     }
 }

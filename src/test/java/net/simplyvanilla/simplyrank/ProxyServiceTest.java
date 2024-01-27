@@ -43,7 +43,7 @@ class ProxyServiceTest {
     void testDeleteExpiredEntries() {
         ProxyService service = new ProxyService(this.proxyCacheRepository, address -> null);
 
-        this.proxyCacheRepository.insert(new ProxyData("1.1.1.1", ProxyType.HTTP, false, LocalDateTime.now().minus(2, ChronoUnit.MINUTES)));
+        this.proxyCacheRepository.insert(new ProxyData("1.1.1.1", ProxyType.HTTP, false, LocalDateTime.now().minusMinutes(2)));
         this.proxyCacheRepository.insert(new ProxyData("1.1.1.2", ProxyType.HTTP, false, LocalDateTime.now()));
         Assertions.assertTrue(this.proxyCacheRepository.findByAddress("1.1.1.1").isPresent());
         service.deleteExpiredEntries(1);

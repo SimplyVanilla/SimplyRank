@@ -22,7 +22,7 @@ public enum ProxyType {
     BLACKLISTED("blacklisted by"),
     UNKNOWN("Unknown");
 
-    private String value;
+    private final String value;
 
     ProxyType(String value) {
         this.value = value;
