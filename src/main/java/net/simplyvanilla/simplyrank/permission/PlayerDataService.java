@@ -5,9 +5,9 @@ import net.simplyvanilla.simplyrank.database.group.GroupRepository;
 import net.simplyvanilla.simplyrank.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Service which handles the loading and saving of player data.
@@ -17,8 +17,8 @@ public final class PlayerDataService {
     private final GroupRepository groupRepository;
     private final PlayerDataRepository playerDataRepository;
 
-    private final Map<UUID, PlayerData> playerDataCache = new HashMap<>();
-    private final Map<String, GroupData> groupDataCache = new HashMap<>();
+    private final Map<UUID, PlayerData> playerDataCache = new ConcurrentHashMap<>();
+    private final Map<String, GroupData> groupDataCache = new ConcurrentHashMap<>();
 
     public PlayerDataService(GroupRepository groupRepository, PlayerDataRepository playerDataRepository) {
         this.groupRepository = groupRepository;
