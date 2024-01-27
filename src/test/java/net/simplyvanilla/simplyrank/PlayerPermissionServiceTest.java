@@ -4,10 +4,10 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.MockPlugin;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.PlayerPermissionService;
-import net.simplyvanilla.simplyrank.data.database.group.GroupRepository;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
+import net.simplyvanilla.simplyrank.permission.PlayerDataService;
+import net.simplyvanilla.simplyrank.permission.PlayerPermissionService;
+import net.simplyvanilla.simplyrank.database.group.GroupRepository;
+import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
 import net.simplyvanilla.simplyrank.database.GroupRepositoryMock;
 import net.simplyvanilla.simplyrank.database.PlayerDataRepositoryMock;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +29,7 @@ class PlayerPermissionServiceTest {
         this.plugin = MockBukkit.createMockPlugin();
         this.groupRepository = new GroupRepositoryMock();
         this.playerDataRepository = new PlayerDataRepositoryMock();
-        this.playerDataService = new PlayerDataService(this.plugin, this.groupRepository, this.playerDataRepository);
+        this.playerDataService = new PlayerDataService(this.groupRepository, this.playerDataRepository);
         this.service = new PlayerPermissionService(this.plugin, this.playerDataService);
     }
 

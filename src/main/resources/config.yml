@@ -4,3 +4,7 @@ database:
   url: jdbc:mysql://127.0.0.1:3306/simplyrank?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
   username: user123
   password: pass123
+
+# ttl for proxy cache in minutes
+proxycache-ttl: 720
+proxycheck-api-url: 'https://proxycheck.io/v2/%s&vpn=1'

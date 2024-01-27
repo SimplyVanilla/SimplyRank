@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.permission;
 
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;

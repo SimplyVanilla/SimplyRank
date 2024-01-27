@@ -1,4 +1,4 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.permission;
 
 import java.util.Collections;
 import java.util.HashMap;

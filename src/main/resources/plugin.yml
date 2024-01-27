@@ -20,6 +20,13 @@ commands:
       /simplyrank rem PLAYER RANK - Remove rank from a player.
     permission: simplyrank.manage
 
+  vpn-whitelist:
+    description: VPN whitelist management command
+    usage: |
+      /vpn-whitelist add ADDRESS - Add an IP to the whitelist.
+      /vpn-whitelist remove ADDRESS - Remove an IP from the whitelist.
+    permission: simplyrank.manage
+
 permissions:
   simplyrank.manage:
     description: whether the player can change other player's rank
@@ -27,4 +34,8 @@ permissions:
 
   simplyrank.joinfullserver:
     description: whether the player can join a full server
-    default: false
+    default: op
+
+  simplyrank.bypass.vpn:
+    description: whether the player can bypass VPN check
+    default: op

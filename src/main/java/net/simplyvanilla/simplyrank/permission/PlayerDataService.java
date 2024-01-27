@@ -1,10 +1,9 @@
-package net.simplyvanilla.simplyrank.data;
+package net.simplyvanilla.simplyrank.permission;
 
-import net.simplyvanilla.simplyrank.data.database.group.GroupData;
-import net.simplyvanilla.simplyrank.data.database.group.GroupRepository;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerData;
-import net.simplyvanilla.simplyrank.data.database.player.PlayerDataRepository;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.simplyvanilla.simplyrank.database.group.GroupData;
+import net.simplyvanilla.simplyrank.database.group.GroupRepository;
+import net.simplyvanilla.simplyrank.database.player.PlayerData;
+import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +14,13 @@ import java.util.UUID;
  */
 public final class PlayerDataService {
 
-    private final JavaPlugin javaPlugin;
     private final GroupRepository groupRepository;
     private final PlayerDataRepository playerDataRepository;
 
     private final Map<UUID, PlayerData> playerDataCache = new HashMap<>();
     private final Map<String, GroupData> groupDataCache = new HashMap<>();
 
-    public PlayerDataService(JavaPlugin javaPlugin, GroupRepository groupRepository, PlayerDataRepository playerDataRepository) {
-        this.javaPlugin = javaPlugin;
+    public PlayerDataService(GroupRepository groupRepository, PlayerDataRepository playerDataRepository) {
         this.groupRepository = groupRepository;
         this.playerDataRepository = playerDataRepository;
     }

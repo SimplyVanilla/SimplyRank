@@ -1,7 +1,7 @@
 package net.simplyvanilla.simplyrank.command;
 
-import net.simplyvanilla.simplyrank.data.PlayerDataService;
-import net.simplyvanilla.simplyrank.data.PermissionApplyService;
+import net.simplyvanilla.simplyrank.permission.PlayerDataService;
+import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
 
 public abstract class AbstractCommand implements SubCommand {
     protected final CommandErrorMessages errorMessages;

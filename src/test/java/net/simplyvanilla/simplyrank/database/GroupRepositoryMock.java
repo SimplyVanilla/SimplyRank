@@ -1,7 +1,7 @@
 package net.simplyvanilla.simplyrank.database;
 
-import net.simplyvanilla.simplyrank.data.database.group.GroupData;
-import net.simplyvanilla.simplyrank.data.database.group.GroupRepository;
+import net.simplyvanilla.simplyrank.database.group.GroupData;
+import net.simplyvanilla.simplyrank.database.group.GroupRepository;
 
 import java.util.HashMap;
 import java.util.Map;
