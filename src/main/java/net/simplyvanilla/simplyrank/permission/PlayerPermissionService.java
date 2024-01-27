@@ -4,16 +4,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This service is responsible for managing the permissions of players.
  */
 public class PlayerPermissionService {
 
-    private final Map<UUID, PermissionAttachment> attachmentMap = new HashMap<>();
+    private final Map<UUID, PermissionAttachment> attachmentMap = new ConcurrentHashMap<>();
 
     private final Plugin plugin;
     private final PlayerDataService playerDataService;
