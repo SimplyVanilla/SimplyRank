@@ -1,6 +1,7 @@
 package net.simplyvanilla.simplyrank.listener;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
 import net.simplyvanilla.simplyrank.addresswhitelist.AddressWhitelistService;
 import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
@@ -42,7 +43,8 @@ public class PlayerLoginEventListener implements Listener {
             this.permissionApplyService.apply(player);
 
             if (!player.hasPermission("simplyrank.bypass.vpn") && !this.addressWhitelistService.isWhitelisted(player) && this.proxyService.isDenied(player)) {
-                this.kickPlayer(player, Component.translatable("You are not allowed to join this server."));
+                this.kickPlayer(player, MiniMessage.miniMessage().deserialize(
+                    this.javaPlugin.getConfig().getString("proxy-denied-message", "<red>You are not allowed to join this server.")));
                 return;
             }
 
