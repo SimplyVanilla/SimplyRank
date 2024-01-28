@@ -6,8 +6,11 @@ import net.simplyvanilla.simplyrank.proxy.provider.ProxyProvider;
 import net.simplyvanilla.simplyrank.proxy.provider.ProxyType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProxyService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyService.class);
     private final ProxyCacheRepository repository;
     private final ProxyProvider provider;
 
@@ -19,10 +22,11 @@ public class ProxyService {
     public boolean isDenied(Player player) {
         String addressOfPlayer = player.getAddress().getAddress().getHostAddress();
 
-        ProxyData proxyData = this.repository.findByAddress(addressOfPlayer).orElseGet(() -> fetchFromProvider(addressOfPlayer));
+        ProxyData proxyData = this.repository.findByAddress(addressOfPlayer).orElseGet(() -> this.fetchFromProvider(addressOfPlayer));
 
         // We couldn't fetch the proxy data from the provider, so we'll just assume they're not a proxy
         if (proxyData == null) {
+            LOGGER.warn("Could not fetch proxy data for player {} ({})", player.getName(), player.getUniqueId());
             return false;
         }
 
@@ -36,7 +40,10 @@ public class ProxyService {
     @Nullable
     private ProxyData fetchFromProvider(String addressOfPlayer) {
         var result = this.provider.fetch(addressOfPlayer);
-        if (result == null) return null;
+        // We couldn't fetch the proxy data from the provider
+        if (result == null) {
+            return null;
+        }
         var data = result.toData(addressOfPlayer);
         this.repository.insert(data);
         return data;

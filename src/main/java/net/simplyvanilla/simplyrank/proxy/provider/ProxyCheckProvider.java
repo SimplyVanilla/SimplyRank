@@ -32,6 +32,7 @@ public class ProxyCheckProvider implements ProxyProvider {
                 .build(), HttpResponse.BodyHandlers.ofString()
             ).body();
 
+            LOGGER.debug("Response from proxy check provider: {}", response);
             return this.parseResponse(response, address);
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -44,7 +45,7 @@ public class ProxyCheckProvider implements ProxyProvider {
     public ProxyResult parseResponse(String content, String address) {
         JsonObject object = JsonParser.parseString(content).getAsJsonObject();
 
-        if (object.get("status").getAsString().equals("ok")) {
+        if (!object.get("status").getAsString().equals("ok")) {
             return null;
         }
 

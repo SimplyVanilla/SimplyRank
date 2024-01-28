@@ -15,6 +15,7 @@ import net.simplyvanilla.simplyrank.database.group.GroupData;
 import net.simplyvanilla.simplyrank.database.group.GroupRepository;
 import net.simplyvanilla.simplyrank.database.player.PlayerData;
 import net.simplyvanilla.simplyrank.database.player.PlayerDataRepository;
+import net.simplyvanilla.simplyrank.database.proxycache.ProxyCacheRepository;
 import net.simplyvanilla.simplyrank.listener.PlayerLoginEventListener;
 import net.simplyvanilla.simplyrank.permission.GroupPermissionService;
 import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
@@ -22,6 +23,7 @@ import net.simplyvanilla.simplyrank.permission.PlayerDataService;
 import net.simplyvanilla.simplyrank.permission.PlayerPermissionService;
 import net.simplyvanilla.simplyrank.player.CustomPlayerMock;
 import net.simplyvanilla.simplyrank.proxy.ProxyService;
+import net.simplyvanilla.simplyrank.proxy.provider.ProxyProvider;
 import net.simplyvanilla.simplyrank.proxy.provider.ProxyResult;
 import net.simplyvanilla.simplyrank.proxy.provider.ProxyType;
 import org.awaitility.Awaitility;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -165,5 +168,28 @@ class PlayerLoginTest {
                 return true;
             }
         });
+    }
+
+    @Test
+    void testIfProxyCacheIsWorking() {
+        ProxyCacheRepository proxyCacheRepository = new ProxyCacheRepositoryMock();
+        ProxyProvider proxyProvider = address -> {
+            if (address.equals("1.1.1.1")) {
+                return new ProxyResult(ProxyType.VPN, true);
+            } else {
+                return new ProxyResult(ProxyType.RESIDENTIAL, false);
+            }
+        };
+        ProxyService proxyService = new ProxyService(proxyCacheRepository, proxyProvider);
+//        this.server.getPluginManager().registerEvents(new PlayerLoginEventListener(this.plugin, this.permissionApplyService, proxyService, this.addressWhitelistService), this.plugin);
+
+        PlayerMock player = new CustomPlayerMock(this.server, "MockPlayer1", UUID.randomUUID());
+        player.setAddress(new InetSocketAddress("1.1.1.1", 1337));
+        this.server.addPlayer(player);
+        Assertions.assertTrue(proxyCacheRepository.findByAddress("1.1.1.1").isEmpty());
+        Assertions.assertEquals(ProxyType.VPN, Objects.requireNonNull(proxyProvider.fetch("1.1.1.1")).type());
+        Assertions.assertEquals(ProxyType.RESIDENTIAL, Objects.requireNonNull(proxyProvider.fetch("8.8.8.8")).type());
+        Assertions.assertTrue(proxyService.isDenied(player));
+        Assertions.assertTrue(proxyCacheRepository.findByAddress("1.1.1.1").isPresent());
     }
 }
