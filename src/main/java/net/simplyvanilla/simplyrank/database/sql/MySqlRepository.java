@@ -133,7 +133,8 @@ public class MySqlRepository implements PlayerDataRepository, GroupRepository, P
                 address,
                 ProxyType.valueOf(result.getString("type")),
                 result.getBoolean("proxy"),
-                result.getTimestamp("fetched_at").toLocalDateTime()
+                result.getTimestamp("fetched_at").toLocalDateTime(),
+                true
             ));
         } catch (SQLException e) {
             throw new MySqlStatementFailedException(e);

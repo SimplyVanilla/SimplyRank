@@ -45,9 +45,10 @@ public class ProxyCheckProvider implements ProxyProvider {
     public ProxyResult parseResponse(String content, String address) {
         JsonObject object = JsonParser.parseString(content).getAsJsonObject();
 
-        if (!object.get("status").getAsString().equals("ok")) {
-            return null;
-        }
+        // We check if the response contains a address object instead of status
+//        if (!object.get("status").getAsString().equals("ok")) {
+//            return null;
+//        }
 
         if (!object.has(address)) {
             return null;
