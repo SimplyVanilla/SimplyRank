@@ -23,7 +23,7 @@ public class ProxyService {
         String addressOfPlayer = player.getAddress().getAddress().getHostAddress();
 
         ProxyData proxyData = this.repository.findByAddress(addressOfPlayer).orElseGet(() -> this.fetchFromProvider(addressOfPlayer));
-
+        LOGGER.info("Proxy data for player {} ({}) is {}", player.getName(), player.getUniqueId(), proxyData);
         // We couldn't fetch the proxy data from the provider, so we'll just assume they're not a proxy
         if (proxyData == null) {
             LOGGER.warn("Could not fetch proxy data for player {} ({})", player.getName(), player.getUniqueId());

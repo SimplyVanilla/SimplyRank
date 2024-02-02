@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 class ProxyServiceTest {
 
@@ -36,15 +35,15 @@ class ProxyServiceTest {
     void testIfVpnProxyDataIsVpn() {
         ProxyService service = new ProxyService(this.proxyCacheRepository, address -> null);
 
-        Assertions.assertTrue(service.isVpn(new ProxyData("", ProxyType.VPN, true, LocalDateTime.now())));
+        Assertions.assertTrue(service.isVpn(new ProxyData("", ProxyType.VPN, true, LocalDateTime.now(), false)));
     }
 
     @Test
     void testDeleteExpiredEntries() {
         ProxyService service = new ProxyService(this.proxyCacheRepository, address -> null);
 
-        this.proxyCacheRepository.insert(new ProxyData("1.1.1.1", ProxyType.HTTP, false, LocalDateTime.now().minusMinutes(2)));
-        this.proxyCacheRepository.insert(new ProxyData("1.1.1.2", ProxyType.HTTP, false, LocalDateTime.now()));
+        this.proxyCacheRepository.insert(new ProxyData("1.1.1.1", ProxyType.HTTP, false, LocalDateTime.now().minusMinutes(2), false));
+        this.proxyCacheRepository.insert(new ProxyData("1.1.1.2", ProxyType.HTTP, false, LocalDateTime.now(), false));
         Assertions.assertTrue(this.proxyCacheRepository.findByAddress("1.1.1.1").isPresent());
         service.deleteExpiredEntries(1);
         Assertions.assertFalse(this.proxyCacheRepository.findByAddress("1.1.1.1").isPresent());
