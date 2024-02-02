@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'net.simplyvanilla'
-version '0.8.2'
+version '0.8.3'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
