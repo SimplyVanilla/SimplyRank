@@ -29,7 +29,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,11 +150,14 @@ public class SimplyRankPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        if (this.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        @Nullable Plugin plugin = this.getServer().getPluginManager().getPlugin("PlaceholderAPI");
+        if (plugin != null && plugin.isEnabled()) {
             new SimplyRankPlaceholderExpansion().register();
             new ScoreboardTeamsPlaceholderExtension().register();
-            new MiniPlaceholderRegister(this).register();
         }
+        plugin = this.getServer().getPluginManager().getPlugin("MiniPlaceholders");
+        if (plugin != null && plugin.isEnabled())
+            new MiniPlaceholderRegister(this).register();
     }
 
     @Override
