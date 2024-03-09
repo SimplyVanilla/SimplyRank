@@ -2,12 +2,12 @@ main: net.simplyvanilla.simplyrank.SimplyRankPlugin
 name: SimplyRank
 version: @version@
 api-version: 1.19
+folia-supported: true
 
 author: Simply Vanilla
 website: https://github.com/SimplyVanilla/SimplyRank
-folia-supported: true
 
-softdepend: [PlaceholderAPI, MiniPlaceholders]
+depend: [MiniPlaceholders]
 
 commands:
   simplyrank:
