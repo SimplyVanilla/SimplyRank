@@ -9,4 +9,4 @@ database:
 proxycache-ttl: 720
 proxycheck-api-url: 'https://proxycheck.io/v2/%s&vpn=1'
 
-proxy-denied-message: 'You are using a proxy or VPN. Please disable it and try again.'
+proxy-denied-message: '<red>You are using a proxy or VPN. Please disable it and try again.</red>'

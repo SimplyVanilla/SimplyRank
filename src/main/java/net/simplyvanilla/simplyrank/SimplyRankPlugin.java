@@ -20,8 +20,6 @@ import net.simplyvanilla.simplyrank.permission.PermissionApplyService;
 import net.simplyvanilla.simplyrank.permission.PlayerDataService;
 import net.simplyvanilla.simplyrank.permission.PlayerPermissionService;
 import net.simplyvanilla.simplyrank.placeholder.MiniPlaceholderRegister;
-import net.simplyvanilla.simplyrank.placeholder.ScoreboardTeamsPlaceholderExtension;
-import net.simplyvanilla.simplyrank.placeholder.SimplyRankPlaceholderExpansion;
 import net.simplyvanilla.simplyrank.proxy.ProxyService;
 import net.simplyvanilla.simplyrank.proxy.ProxyTtlCleanupTask;
 import net.simplyvanilla.simplyrank.proxy.provider.ProxyCheckProvider;
@@ -150,12 +148,7 @@ public class SimplyRankPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        @Nullable Plugin plugin = this.getServer().getPluginManager().getPlugin("PlaceholderAPI");
-        if (plugin != null && plugin.isEnabled()) {
-            new SimplyRankPlaceholderExpansion().register();
-            new ScoreboardTeamsPlaceholderExtension().register();
-        }
-        plugin = this.getServer().getPluginManager().getPlugin("MiniPlaceholders");
+        @Nullable Plugin plugin = this.getServer().getPluginManager().getPlugin("MiniPlaceholders");
         if (plugin != null && plugin.isEnabled())
             new MiniPlaceholderRegister(this).register();
     }
