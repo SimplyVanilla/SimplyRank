@@ -7,7 +7,7 @@ author: Simply Vanilla
 website: https://github.com/SimplyVanilla/SimplyRank
 folia-supported: true
 
-depend: [PlaceholderAPI, MiniPlaceholders]
+softdepend: [PlaceholderAPI, MiniPlaceholders]
 
 commands:
   simplyrank:
