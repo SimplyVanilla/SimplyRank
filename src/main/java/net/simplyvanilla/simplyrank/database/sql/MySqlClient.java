@@ -65,11 +65,13 @@ public class MySqlClient {
     }
 
     public void update(PreparedStatement statement) throws SQLException {
+        testConnection();
         statement.executeUpdate();
         statement.close();
     }
 
     public ResultSet query(PreparedStatement statement) throws SQLException {
+        testConnection();
         ResultSet rs;
         rs = statement.executeQuery();
 
@@ -79,6 +81,7 @@ public class MySqlClient {
     }
 
     private void executeRawStatement(String cmd) throws SQLException {
+        testConnection();
         try (Statement st = connection.createStatement()) {
             st.execute(cmd);
         }
@@ -151,6 +154,7 @@ public class MySqlClient {
     }
 
     public PreparedStatement prepareStatement(String qry) throws SQLException {
+        testConnection();
         return connection.prepareStatement(qry);
     }
 
