@@ -9,6 +9,9 @@ public class MySqlClient {
     public static final String TABLE_PLAYERS_NAME = "player";
     public static final String TABLE_GROUPS_NAME = "group";
 
+    private static final int MAX_TRIES = 10;
+    private static final long WAIT_TIME = 3000;
+
     private final String url;
     private final String username;
     private final String password;
@@ -22,6 +25,27 @@ public class MySqlClient {
 
         connect();
         initTables();
+    }
+
+    public void testConnection() {
+        for (int i = 0; i < MAX_TRIES; i++) {
+            if (testConnectionSingle()) return;
+            try {
+                Thread.sleep(WAIT_TIME);
+            } catch (InterruptedException ignored) {
+                break;
+            }
+        }
+        throw new RuntimeException(String.format("It was not possible to recover Database connection after %s tries", MAX_TRIES));
+    }
+
+    private boolean testConnectionSingle() {
+        try {
+            connection = DriverManager.getConnection(url, username, password);
+            return connection.isValid(1);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     public void connect() {
