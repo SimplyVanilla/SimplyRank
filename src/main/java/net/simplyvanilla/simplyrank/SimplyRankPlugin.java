@@ -3,6 +3,7 @@ package net.simplyvanilla.simplyrank;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.simplyvanilla.simplyrank.addresswhitelist.AddressWhitelistService;
@@ -45,6 +46,8 @@ public class SimplyRankPlugin extends JavaPlugin {
     private PlayerDataService playerDataService;
 
     private MySqlClient mySqlClient = null;
+
+    private ScheduledTask cleanerTask;
 
 
     @Override
@@ -93,7 +96,7 @@ public class SimplyRankPlugin extends JavaPlugin {
         this.playerDataService =
             new PlayerDataService(mySqlRepository, mySqlRepository);
         proxyService = new ProxyService(mySqlRepository, new ProxyCheckProvider(this.getConfig().getString("proxycheck-api-url", "https://proxycheck.io/v2/%s&vpn=1")));
-        Bukkit.getAsyncScheduler().runAtFixedRate(this, new ProxyTtlCleanupTask(proxyService, this.getConfig().getInt("proxycache-ttl", 720)), 1, 10, TimeUnit.SECONDS);
+        this.cleanerTask = Bukkit.getAsyncScheduler().runAtFixedRate(this, new ProxyTtlCleanupTask(proxyService, this.getConfig().getInt("proxycache-ttl", 720)), 1, 10, TimeUnit.SECONDS);
 
         if (!this.playerDataService.groupExists("default")) {
             GroupData defaultData = new GroupData(NamedTextColor.GRAY, "Member ");
@@ -156,6 +159,7 @@ public class SimplyRankPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
+        if (this.cleanerTask != null) this.cleanerTask.cancel();
         if (this.mySqlClient != null) {
             this.mySqlClient.close();
         }
