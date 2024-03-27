@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.github.kt3k.coveralls' version '2.12.2'
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 group 'net.simplyvanilla'
@@ -31,6 +32,8 @@ dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT'
     compileOnly 'io.github.miniplaceholders:miniplaceholders-api:2.2.3'
 
+    implementation 'com.github.chris2018998:beecp:4.0.1'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
     testImplementation 'com.github.seeseemelk:MockBukkit-v1.20:3.78.0'
@@ -40,6 +43,17 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+tasks {
+    shadowJar {
+        archiveClassifier.set('')
+        relocate('org.stone.beecp', 'net.simplyvanilla.dependencies.beecp')
+        relocate('org.stone.tools', 'net.simplyvanilla.dependencies.tools')
+    }
+    build {
+        dependsOn shadowJar
+    }
 }
 
 jacoco {
