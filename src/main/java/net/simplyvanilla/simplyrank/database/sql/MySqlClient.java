@@ -1,6 +1,8 @@
 package net.simplyvanilla.simplyrank.database.sql;
 
 import net.simplyvanilla.simplyrank.SimplyRankPlugin;
+import org.stone.beecp.BeeDataSource;
+import org.stone.beecp.BeeDataSourceConfig;
 
 import java.sql.*;
 
@@ -13,31 +15,27 @@ public class MySqlClient {
     private final String username;
     private final String password;
 
-    private Connection connection;
+    private BeeDataSource dataSource;
 
     public MySqlClient(String url, String user, String password) {
         this.url = url;
         this.username = user;
         this.password = password;
 
-        connect();
-        initTables();
+        this.connect();
+        this.initTables();
     }
 
     public void connect() {
-        try {
-            connection = DriverManager.getConnection(url, username, password);
-        } catch (SQLException e) {
-            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not connect to MySQL database", e);
-        }
+        var config = new BeeDataSourceConfig();
+        config.setJdbcUrl(this.url);
+        config.setUsername(this.username);
+        config.setPassword(this.password);
+        this.dataSource = new BeeDataSource(config);
     }
 
     public void close() {
-        try {
-            if (connection != null) connection.close();
-        } catch (SQLException e) {
-            SimplyRankPlugin.getInstance().getSLF4JLogger().error("Could not close MySQL connection", e);
-        }
+        this.dataSource.close();
     }
 
     public void update(PreparedStatement statement) throws SQLException {
@@ -55,7 +53,7 @@ public class MySqlClient {
     }
 
     private void executeRawStatement(String cmd) throws SQLException {
-        try (Statement st = connection.createStatement()) {
+        try (Connection connection = this.dataSource.getConnection(); Statement st = connection.createStatement()) {
             st.execute(cmd);
         }
     }
@@ -127,7 +125,9 @@ public class MySqlClient {
     }
 
     public PreparedStatement prepareStatement(String qry) throws SQLException {
-        return connection.prepareStatement(qry);
+        try(Connection connection = this.dataSource.getConnection()) {
+            return connection.prepareStatement(qry);
+        }
     }
 
     public PreparedStatement prepareStatement(String qry, String... parameters) throws SQLException {
