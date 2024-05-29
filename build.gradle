@@ -33,7 +33,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
-    testImplementation 'com.github.seeseemelk:MockBukkit-v1.20:3.84.0'
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.20:3.87.0'
     testImplementation 'org.awaitility:awaitility:4.2.1'
     testRuntimeOnly 'mysql:mysql-connector-java:8.0.33'
 }
